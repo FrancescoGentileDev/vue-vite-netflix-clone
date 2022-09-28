@@ -3,7 +3,7 @@ import axios from "axios";
 
 class Call {
   pages = 1;
-  lastpath = "";
+  path = "";
   results = [];
   data = {
     params: {
@@ -32,7 +32,7 @@ class Call {
   }
 
   async makeCall(...path) {
-    let string = this.lastpath;
+    let string = this.path;
     let response = [];
 
     if (string === "")
@@ -40,7 +40,7 @@ class Call {
         string += "/" + ele;
       }
 
-    this.lastpath = string;
+    this.path = string;
     await axios.get("https://api.themoviedb.org/3" + string, this.data).then(({ data }) => {
       response = { ...data };
       this.results = { ...response };
@@ -52,24 +52,24 @@ class Call {
   }
 
   async nextPage() {
-    if (this.lastpath !== "") {
+    if (this.path !== "") {
       this.pages++;
       this.data.params.page++;
-      return await this.makeCall(this.lastpath);
+      return await this.makeCall(this.path);
     }
   }
   async prevPage() {
-    if (this.lastpath !== "") {
+    if (this.path !== "") {
       this.pages--;
       this.data.params.page--;
-      return await this.makeCall(this.lastpath);
+      return await this.makeCall(this.path);
     }
   }
   async toPage(number) {
-    if (this.lastpath !== "") {
+    if (this.path !== "") {
       this.pages = number;
       this.data.params.page = number;
-      return await this.makeCall(this.lastpath);
+      return await this.makeCall(this.path);
     }
   }
   getImage(index = 0, numberSize = 4) {

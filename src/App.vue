@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <header-section @text="inputText" />
-
-    <content-section />
+    <header-section  @text="inputText" />
+    <div v-if="displayFilm.length === 0">COCCOBELLO</div>
+    <content-section  v-else :displayFilm="displayFilm"/>
   </div>
 </template>
 
@@ -33,16 +33,17 @@ export default {
     };
   },
   created() {
-    let popular = new Call({language:"it"})
+    let popular = new Call({language:"it-IT"})
     popular.makeCall("movie", "popular")
     .then((value) =>{
-      this.displayFilm.push(value)      
+      console.log(value)
+      this.displayFilm = value 
     })
-    this.callPopular = popular
+    
   },
   methods: {
     inputText(value) {
-      this.searchText = value;
+      this.searchText = value.trim().toLowerCase();
     },
   },
   asyncComputed: {
@@ -50,8 +51,6 @@ export default {
       const searchInput = this.searchText;
       const arr = [];
       if (searchInput !== "") {
-       
-       
        let search = new Call({
           query: searchInput,
         }).makeCall("search", "movie").then((value)=> {

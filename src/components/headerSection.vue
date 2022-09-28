@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="mb-3">
+  <div class="row">
+    <div class="mb-3 col-2">
       <label for="" class="form-label">Search Film</label>
       <input
         type="text"
@@ -8,7 +8,7 @@
         name=""
         id=""
         aria-describedby="helpId"
-        placeholder=""
+        placeholder="Search Film"
         v-model="textInput"
         @keyup.enter="entered"
       />
