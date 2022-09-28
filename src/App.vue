@@ -10,34 +10,9 @@
 import ContentSection from "./components/contentSection.vue";
 import HeaderSection from "./components/headerSection.vue";
 import key from "./key";
+import Call from "./call"
+// eslint-disable-next-line no-unused-vars
 import axios from "axios";
-
-class Params {
-  data = {
-    params: {
-      api_key: key,
-    },
-  };
-
-  constructor(queries) {
-    for (let key in queries) {
-      this.data.params[key] = queries[key];
-    }
-  }
-  addQuery(queries) {
-    for (let key in queries) {
-      this.data.params[key] = queries[key];
-    }
-  }
-  removeQuery(queries) {
-    for (let key in queries) {
-      delete this.data.params[key];
-    }
-  }
-  get Params() {
-    return this.data
-  }
-}
 
 export default {
   name: "App",
@@ -52,12 +27,21 @@ export default {
       baseUrl: "https://api.themoviedb.org/3",
       searchText: "",
       displayFilm: [],
+      popularFilm: [],
+      callPopular: Call,
+      callSearch: Call
     };
   },
-  created() {},
+  created() {
+    let popular = new Call({language:"it"})
+    popular.makeCall("movie", "popular")
+    .then((value) =>{
+      this.displayFilm.push(value)      
+    })
+    this.callPopular = popular
+  },
   methods: {
     inputText(value) {
-      console.log(value);
       this.searchText = value;
     },
   },
@@ -66,16 +50,16 @@ export default {
       const searchInput = this.searchText;
       const arr = [];
       if (searchInput !== "") {
-        
-        let query= new Params({
-          query: searchInput
+       
+       
+       let search = new Call({
+          query: searchInput,
+        }).makeCall("search", "movie").then((value)=> {
+          console.log(value)
+          arr.push(value)
         });
-        console.log(query.Params)
-        axios.get(this.baseUrl + "/search/movie", query.data).then(({ data }) => {
-          arr.push(data);
-        });
+      this.callSearch = search
       }
-
       return arr;
     },
   },
