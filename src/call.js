@@ -1,9 +1,13 @@
+/* eslint-disable no-async-promise-executor */
+/* eslint-disable no-unused-vars */
 import key from "./key";
 import axios from "axios";
-import {codeToLanguage, languageToCountry} from "./country";
+import { codeToLanguage, languageToCountry } from "./country";
 class Call {
   pages = 1;
   path = "";
+  type = "";
+  baseURL = "https://api.themoviedb.org/3";
   results = [];
   data = {
     params: {
@@ -33,26 +37,41 @@ class Call {
 
   async makeCall(...path) {
     let string = this.path;
-    let response = [];
 
-    if (string === "")
+    if (string === "") {
       for (let ele of path) {
+        if (ele === "movie") this.type = "movie";
+        else if (ele === "tv") this.type = "tv";
+
         string += "/" + ele;
       }
+    }
 
     this.path = string;
-    await axios.get("https://api.themoviedb.org/3" + string, this.data).then(({ data }) => {
-      response = { ...data };
-      this.results = { ...response };
-      response.results.map(async (value, index) => {
-        value.image = this.getImage(index)
-        value.flag =this.getFlag(value.original_language)
-        value.languageCode = value.original_language
-        value.original_language = codeToLanguage[value.original_language]
-      })
+
+    let response = await axios.get(this.baseURL + string, this.data).then(({ data }) => {
+      return data;
     });
-    // eslint-disable-next-line no-unused-vars, no-undef
-    return response.results;
+
+    return new Promise(async (resolve) => {
+      response.results.forEach(async (value, index) => {
+        let info = await this.getMoreInformation(value.id, 5)
+        let { backdrop_path, genres, production_countries, release_date, runtime, belongs_to_collection } = info
+        if (production_countries.length === 0) production_countries.push({ iso_3166_1: "US" })
+        
+        response.results[index].image =await this.getImage(index, 5, value.poster_path);
+        response.results[index].backdrop =await this.getImage(index, 5, backdrop_path);
+        response.results[index].flag =await this.getFlag(production_countries[0].iso_3166_1);
+        response.results[index].languageCode = value.original_language;
+        response.results[index].original_language = codeToLanguage[value.original_language];
+       
+        response.results[index] = { ...value, backdrop_path, genres, production_countries, release_date, runtime,belongs_to_collection };
+      });
+      this.results = response;
+      resolve(response);
+    }).then((response) => {
+      return response;
+    });
   }
 
   async nextPage() {
@@ -76,21 +95,39 @@ class Call {
       return await this.makeCall(this.path);
     }
   }
-  getImage(index = 0, numberSize = 4) {
-    let sizes = ["w92", "w154", "w185", "w342", "w500", "w780", "original"]
-    let result = "https://image.tmdb.org/t/p/" + sizes[numberSize]+ this.results.results[index].poster_path
-    return result
+  async getImage(index = 0, numberSize = 4, poster_path) {
+    let path
+    if (poster_path)
+      path = poster_path
+    else
+      path = this.results.results[index].poster_path
+    
+    let sizes = ["w92", "w154", "w185", "w342", "w500", "w780", "original"];
+    let result =
+      "https://image.tmdb.org/t/p/" + sizes[numberSize] + path;
+
+    return result;
   }
-
-  getFlag(language) {
-
-    const codePoints = languageToCountry[language]
-    .split('')
-      .map(char => 127397 + char.charCodeAt());
+   
+  async getFlag(country) {
+    if (!country) {
+      country = "US"
+    }
+    const codePoints = country
+      .split("")
+      .map((char) => 127397 + char.charCodeAt());
     // console.log(codePoints)
     return String.fromCodePoint(...codePoints);
   }
 
-
+  async getMoreInformation(id) {
+    let response = await axios
+      .get(`${this.baseURL}/${this.type}/${id}`, this.Params)
+      .then(({ data }) => {
+        return data;
+      });
+    return response;
+  }
 }
+let count = 0
 export default Call;

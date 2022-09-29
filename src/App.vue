@@ -1,8 +1,10 @@
 <template>
   <div id="app">
-    <header-section  @text="inputText" />
-    <div v-if="popularFilm.length === 0">COCCOBELLO</div>
-    <content-section  v-else :popularFilm="search"/>
+    <header-section @text="inputText" />
+    <div v-if="loading">COCCOBELLO</div>
+    <div class="container">
+      <content-section v-if="!loading" :popularFilm="search" />
+    </div>
   </div>
 </template>
 
@@ -10,7 +12,7 @@
 import ContentSection from "./components/contentSection.vue";
 import HeaderSection from "./components/headerSection.vue";
 import key from "./key";
-import Call from "./call"
+import Call from "./call";
 // eslint-disable-next-line no-unused-vars
 import axios from "axios";
 
@@ -26,19 +28,25 @@ export default {
       apiKey: key,
       baseUrl: "https://api.themoviedb.org/3",
       searchText: "",
+      loading: true,
       popularFilm: [],
       callPopular: Call,
-      callSearch: Call
+      callSearch: Call,
     };
   },
-  created() {
-    let popular = new Call({language:"it-IT"})
-    popular.makeCall("movie", "popular")
-    .then((value) =>{
-      console.log(value)
-      this.popularFilm = value 
-    })
-    
+  async created() {
+    let popular = new Call({ language: "it-IT" });
+
+    await popular.makeCall("movie", "popular").then((value) => {
+      this.popularFilm = value.results;
+    });
+  },
+  mounted() {
+    this.$nextTick(() => {
+        setTimeout(() => {
+          this.loading = false;
+        }, 500);
+    });
   },
   methods: {
     inputText(value) {
@@ -46,17 +54,19 @@ export default {
     },
   },
   asyncComputed: {
-   async search () {
+    async search() {
       const searchInput = this.searchText;
       let arr = this.popularFilm;
       if (searchInput !== "") {
-       let search =await new Call({
+        let search = await new Call({
           query: searchInput,
-        }).makeCall("search", "movie").then((value)=> {
-          console.log(value)
-          arr = value
-        });
-      this.callSearch = search
+        })
+          .makeCall("search", "movie")
+          .then((value) => {
+            console.log(value);
+            arr = value;
+          });
+        this.callSearch = search;
       }
       return arr;
     },

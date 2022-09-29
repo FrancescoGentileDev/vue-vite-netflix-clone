@@ -2,15 +2,16 @@
   <div>
     <card-component class="card"
       v-for="(item, index) in popularFilm" :key="index"
-      :image="item.image"
+      :image="item.backdrop"
       :title="item.title"
       :overview="item.overview"
       :release="item.release_date"
       :popularity="item.popularity"
-      :vote="item.vote_averange"
-      :id="item.id"
+      :vote="item.vote_average"
+      :id="'i'+index"
       :language="item.original_language"
       :flag="item.flag"
+      :runtime="item.runtime"
     />
   </div>
 </template>
@@ -19,11 +20,19 @@
 import cardComponent from "./cardComponent.vue";
 export default {
   components: { cardComponent },
+  data() {
+    return {
+    }
+  },
+  created() {
+    // console.log(this.popularFilm)
+  },
   props: {
     popularFilm: Array,
   },
-  mounted() {
-  },
+  methods: {
+  
+  }
 };
 </script>
 
