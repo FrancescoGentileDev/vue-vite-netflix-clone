@@ -1,6 +1,6 @@
 import key from "./key";
 import axios from "axios";
-
+import languageToCode from "./country";
 class Call {
   pages = 1;
   path = "";
@@ -44,9 +44,13 @@ class Call {
     await axios.get("https://api.themoviedb.org/3" + string, this.data).then(({ data }) => {
       response = { ...data };
       this.results = { ...response };
-      response.results.map(async (value, index) => value.image = this.getImage(index))
-
-    });    
+      response.results.map(async (value, index) => {
+        value.image = this.getImage(index)
+        value.flag = this.getFlag(value.original_language)
+        value.languageCode = value.original_language
+        value.original_language = languageToCode[value.original_language]
+      })
+    });
     // eslint-disable-next-line no-unused-vars, no-undef
     return response.results;
   }
@@ -77,5 +81,18 @@ class Call {
     let result = "https://image.tmdb.org/t/p/" + sizes[numberSize]+ this.results.results[index].poster_path
     return result
   }
+
+  getFlag(language) {
+    const codePoints = language
+
+    .toUpperCase()
+    .split('')
+      .map(char => 127397 + char.charCodeAt());
+    
+    console.log(String.fromCodePoint(...codePoints))
+    return String.fromCodePoint(...codePoints);
+  }
+
+
 }
 export default Call;

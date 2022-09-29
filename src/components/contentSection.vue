@@ -1,13 +1,14 @@
 <template>
   <div>
-    <card-component
-
-      :image="displayFilm[0].image"
-      :title="displayFilm[0].title"
-      :overview="displayFilm[0].overview"
-      :release="displayFilm[0].release_date"
-      :popularity="displayFilm[0].popularity"
-      :vote="displayFilm[0].vote_averange"
+    <card-component class="card"
+      v-for="(item, index) in popularFilm" :key="index"
+      :image="item.image"
+      :title="item.title"
+      :overview="item.overview"
+      :release="item.release_date"
+      :popularity="item.popularity"
+      :vote="item.vote_averange"
+      :id="item.id"
     />
   </div>
 </template>
@@ -17,12 +18,17 @@ import cardComponent from "./cardComponent.vue";
 export default {
   components: { cardComponent },
   props: {
-    displayFilm: Array,
+    popularFilm: Array,
   },
   mounted() {
-    console.log(this.displayFilm);
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+
+
+
+
+</style>

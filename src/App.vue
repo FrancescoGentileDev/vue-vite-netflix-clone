@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <header-section  @text="inputText" />
-    <div v-if="displayFilm.length === 0">COCCOBELLO</div>
-    <content-section  v-else :displayFilm="displayFilm"/>
+    <div v-if="popularFilm.length === 0">COCCOBELLO</div>
+    <content-section  v-else :popularFilm="popularFilm"/>
   </div>
 </template>
 
@@ -26,7 +26,6 @@ export default {
       apiKey: key,
       baseUrl: "https://api.themoviedb.org/3",
       searchText: "",
-      displayFilm: [],
       popularFilm: [],
       callPopular: Call,
       callSearch: Call
@@ -37,7 +36,7 @@ export default {
     popular.makeCall("movie", "popular")
     .then((value) =>{
       console.log(value)
-      this.displayFilm = value 
+      this.popularFilm = value 
     })
     
   },
@@ -49,13 +48,13 @@ export default {
   asyncComputed: {
     search: function () {
       const searchInput = this.searchText;
-      const arr = [];
+      let arr = [];
       if (searchInput !== "") {
        let search = new Call({
           query: searchInput,
         }).makeCall("search", "movie").then((value)=> {
           console.log(value)
-          arr.push(value)
+          arr = value
         });
       this.callSearch = search
       }
@@ -66,7 +65,7 @@ export default {
 </script>
 
 <style lang="scss">
-//@import "/node_modules/bootstrap/scss/bootstrap.scss";
+@import "/node_modules/bootstrap/scss/bootstrap.scss";
 @import "@/variables";
 body {
   background-color: #221f1f;
