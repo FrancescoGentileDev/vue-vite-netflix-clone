@@ -2,7 +2,7 @@
   <div id="app">
     <header-section @text="inputText" />
     <div v-if="loading">COCCOBELLO</div>
-    <div class="container">
+    <div class="fg-container">
       <content-section v-if="!loading" :popularFilm="search" />
     </div>
   </div>
@@ -35,7 +35,7 @@ export default {
     };
   },
   async created() {
-    let popular = new Call({ language: "it-IT" });
+    let popular = new Call({ language: "it-IT", adult: false });
 
     await popular.makeCall("movie", "popular").then((value) => {
       this.popularFilm = value.results;
@@ -60,12 +60,16 @@ export default {
       if (searchInput !== "") {
         let search = await new Call({
           query: searchInput,
+          adult:false,
+          language: "it-IT"
         })
           .makeCall("search", "movie")
           .then((value) => {
             console.log(value);
-            arr = value;
+            arr = value.results;
+             console.log(arr)
           });
+       
         this.callSearch = search;
       }
       return arr;

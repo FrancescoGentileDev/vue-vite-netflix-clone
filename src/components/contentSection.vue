@@ -2,7 +2,8 @@
   <div>
     <card-component class="card"
       v-for="(item, index) in popularFilm" :key="index"
-      :image="item.backdrop"
+      :image="item.image"
+      :backdrop="item.backdrop"
       :title="item.title"
       :overview="item.overview"
       :release="item.release_date"
@@ -12,6 +13,7 @@
       :language="item.original_language"
       :flag="item.flag"
       :runtime="item.runtime"
+      size="sm"
     />
   </div>
 </template>
@@ -25,7 +27,7 @@ export default {
     }
   },
   created() {
-    // console.log(this.popularFilm)
+    console.log(this.popularFilm)
   },
   props: {
     popularFilm: Array,

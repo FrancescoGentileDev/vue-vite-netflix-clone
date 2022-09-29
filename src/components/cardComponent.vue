@@ -1,7 +1,7 @@
 <template>
   <div class="mother">
     <div class="card" :id="id">
-      <img :src="image" :alt="title" @load="prova" />
+      <img :src="usedImage()" :alt="title" @load="prova" />
       <div class="content p-2 pt-4 d-flex flex-column justify-content-between">
         <div class="buttons d-flex justify-content-between">
           <div class="">
@@ -17,7 +17,7 @@
             <button><font-awesome-icon icon="fa-solid fa-plus" /></button>
           </div>
 
-          <div class="align-self-center">
+          <div class="align-self-center flag">
             {{ flag }}
           </div>
         </div>
@@ -29,6 +29,8 @@
         </div>
         <div class="foot d-flex align-items-center justify-content-between">
           <div class="date">
+            <span class="fw-bold">{{ year(release) }}⠀</span>
+
             {{ toHoursAndMinutes(runtime) }}
           </div>
           <div class="stars">
@@ -54,14 +56,25 @@ export default {
     language: String,
     flag: String,
     runtime: Number,
+    backdrop: String,
+    size: String,
   },
   data() {
     return {
       getStars: {
-        width: this.vote * 10 + "%"
-      }
-    }
+        width: this.vote * 10 + "%",
+      },
+      usedImage() {
+        console.log(this.size);
+        if (this.image!==null && this.backdrop!== null){
+        if (this.size === "sm") return this.backdrop;
+        else {
+           return this.image;
+        }}
+      },
+    };
   },
+  mounted() {},
   methods: {
     toHoursAndMinutes(totalMinutes) {
       const minutes = totalMinutes % 60;
@@ -76,6 +89,9 @@ export default {
     prova() {
       console.log("load");
     },
+    year(release) {
+      return release.split("-").at(0);
+    },
   },
 };
 </script>
@@ -83,15 +99,15 @@ export default {
 <style lang="scss" scoped>
 @import "@/variables";
 
-.mother + .mother {
+/*.mother + .mother {
   display: none;
-}
+}*/
 
-button {  
-  $size: 35px;  
+button {
+  $size: 35px;
   width: $size;
-  height: $size;  
-  padding:0;
+  height: $size;
+  padding: 0;
   margin: 3px;
   background: $backround-primary;
   text-align: center !important;
@@ -102,7 +118,7 @@ button {
   font-weight: 100;
   border: 3px solid $white-color;
   border-radius: 50%;
-  transition: all .3s linear;
+  transition: all 0.3s linear;
   &:hover {
     border: 0px;
     background-color: $brand-color;
@@ -113,14 +129,15 @@ div {
   max-width: 300px;
   background-color: transparent;
   $borderSize: 2px;
+
   .card {
     transition: transform 500ms linear;
     position: relative;
     img {
       object-fit: cover;
-      object-position: bottom;
+      object-position: left;
       width: 100%;
-      height: 100%;
+      height: 180px;
     }
     .content {
       display: none !important;
@@ -139,6 +156,11 @@ div {
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
+
+      .flag {
+        font-size: 1.5rem;
+      }
+
       .foot {
         .date {
           font-size: 0.8rem;
@@ -164,11 +186,10 @@ div {
             top: 0;
           }
         }
-
       }
     }
 
-    &/*:hover*/ {
+    &:hover {
       transform: scale(1.1);
       z-index: 1000;
       border: $borderSize solid $brand-color;
