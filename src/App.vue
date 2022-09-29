@@ -2,7 +2,7 @@
   <div id="app">
     <header-section  @text="inputText" />
     <div v-if="popularFilm.length === 0">COCCOBELLO</div>
-    <content-section  v-else :popularFilm="popularFilm"/>
+    <content-section  v-else :popularFilm="search"/>
   </div>
 </template>
 
@@ -46,11 +46,11 @@ export default {
     },
   },
   asyncComputed: {
-    search: function () {
+   async search () {
       const searchInput = this.searchText;
-      let arr = [];
+      let arr = this.popularFilm;
       if (searchInput !== "") {
-       let search = new Call({
+       let search =await new Call({
           query: searchInput,
         }).makeCall("search", "movie").then((value)=> {
           console.log(value)
@@ -72,7 +72,7 @@ body {
   color: $white-color;
 }
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Twemoji Country Flags", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

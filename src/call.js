@@ -1,6 +1,6 @@
 import key from "./key";
 import axios from "axios";
-import languageToCode from "./country";
+import {codeToLanguage, languageToCountry} from "./country";
 class Call {
   pages = 1;
   path = "";
@@ -46,9 +46,9 @@ class Call {
       this.results = { ...response };
       response.results.map(async (value, index) => {
         value.image = this.getImage(index)
-        value.flag = this.getFlag(value.original_language)
+        value.flag =this.getFlag(value.original_language)
         value.languageCode = value.original_language
-        value.original_language = languageToCode[value.original_language]
+        value.original_language = codeToLanguage[value.original_language]
       })
     });
     // eslint-disable-next-line no-unused-vars, no-undef
@@ -83,13 +83,11 @@ class Call {
   }
 
   getFlag(language) {
-    const codePoints = language
 
-    .toUpperCase()
+    const codePoints = languageToCountry[language]
     .split('')
       .map(char => 127397 + char.charCodeAt());
-    
-    console.log(String.fromCodePoint(...codePoints))
+    // console.log(codePoints)
     return String.fromCodePoint(...codePoints);
   }
 

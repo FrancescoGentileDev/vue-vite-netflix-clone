@@ -2,7 +2,7 @@
   <div class="">
     <div class="card" :id="id">
       <img :src="image" :alt="title" />
-      <div class="content">{{ title }}</div>
+      <div class="content">{{ flag }}</div>
     </div>
   </div>
 </template>
@@ -17,6 +17,8 @@ export default {
     popularity: Number,
     vote: Number,
     id: Number,
+    language: String,
+    flag: String
   },
 };
 </script>

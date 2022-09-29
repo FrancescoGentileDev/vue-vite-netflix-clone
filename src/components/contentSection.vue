@@ -9,6 +9,8 @@
       :popularity="item.popularity"
       :vote="item.vote_averange"
       :id="item.id"
+      :language="item.original_language"
+      :flag="item.flag"
     />
   </div>
 </template>
