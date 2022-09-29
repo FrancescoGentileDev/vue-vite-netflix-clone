@@ -5,16 +5,16 @@
       <div class="content p-2 pt-4 d-flex flex-column justify-content-between">
         <div class="buttons d-flex justify-content-between">
           <div class="">
-            <button>O</button>
+            <button><font-awesome-icon icon="fa-solid fa-play" /></button>
             Riproduci
           </div>
           <div>
-            <button>O</button>
-            <button>O</button>
+            <button><font-awesome-icon icon="fa-regular fa-thumbs-up" /></button>
+            <button><font-awesome-icon icon="fa-regular fa-thumbs-down" /></button>
           </div>
 
           <div class="">
-            <button>O</button>
+            <button><font-awesome-icon icon="fa-solid fa-plus" /></button>
           </div>
 
           <div class="align-self-center">
@@ -82,10 +82,32 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/variables";
-/*
+
 .mother + .mother {
   display: none;
-}*/
+}
+
+button {  
+  $size: 35px;  
+  width: $size;
+  height: $size;  
+  padding:0;
+  margin: 3px;
+  background: $backround-primary;
+  text-align: center !important;
+  justify-content: center;
+  align-items: center;
+
+  color: $white-color;
+  font-weight: 100;
+  border: 3px solid $white-color;
+  border-radius: 50%;
+  transition: all .3s linear;
+  &:hover {
+    border: 0px;
+    background-color: $brand-color;
+  }
+}
 
 div {
   max-width: 300px;
@@ -146,7 +168,7 @@ div {
       }
     }
 
-    &:hover {
+    &/*:hover*/ {
       transform: scale(1.1);
       z-index: 1000;
       border: $borderSize solid $brand-color;
