@@ -3,7 +3,7 @@
     <header-section @text="inputText" />
     <div v-if="loading">COCCOBELLO</div>
     <div class="fg-container">
-      <content-section v-if="!loading" :popularFilm="search" />
+      <content-section v-if="!loading" :popularFilm="popularFilm" />
     </div>
   </div>
 </template>
@@ -29,17 +29,41 @@ export default {
       baseUrl: "https://api.themoviedb.org/3",
       searchText: "",
       loading: true,
+
       popularFilm: [],
+      popularTV: [],
+
       callPopular: Call,
       callSearch: Call,
     };
   },
   async created() {
-    let popular = new Call({ language: "it-IT", adult: false });
+    let popularMovie = new Call({ language: "it-IT", adult: false });
 
-    await popular.makeCall("movie", "popular").then((value) => {
-      this.popularFilm = value.results;
+    popularMovie.makeCall("movie", "popular").then((res) => {
+       popularMovie.moreInformationAllMovie(res).then(value => {
+        this.popularFilm = value.results;
+      }
+      )      
     });
+    
+    let popularTV = new Call({ language: "it-IT", adult: false });
+
+    popularTV.makeCall("tv", "popular").then((res) => {
+       popularTV.moreInformationAllTV(res).then(value => {
+        console.log(value)
+        this.popularTV = value.results
+      }
+      )   
+      
+      
+
+    });
+
+
+
+
+    
   },
   mounted() {
     this.$nextTick(() => {

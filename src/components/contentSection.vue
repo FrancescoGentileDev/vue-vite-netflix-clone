@@ -13,7 +13,8 @@
       :language="item.original_language"
       :flag="item.flag"
       :runtime="item.runtime"
-      size="sm"
+      :seasons="item.seasons"
+      :small="true"
     />
   </div>
 </template>

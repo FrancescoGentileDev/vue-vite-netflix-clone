@@ -1,7 +1,7 @@
 <template>
-  <div class="mother">
+  <div class="mother" >
     <div class="card" :id="id">
-      <img :src="usedImage()" :alt="title" @load="prova" />
+      <img :src="usedImage()" :alt="title" @load="prova" :class="{smallImg: small}"/>
       <div class="content p-2 pt-4 d-flex flex-column justify-content-between">
         <div class="buttons d-flex justify-content-between">
           <div class="">
@@ -31,7 +31,7 @@
           <div class="date">
             <span class="fw-bold">{{ year(release) }}⠀</span>
 
-            {{ toHoursAndMinutes(runtime) }}
+            {{seasonsOrMinutes() }}
           </div>
           <div class="stars">
             <p :style="getStars" class="m-0 bars">★★★★★</p>
@@ -57,7 +57,8 @@ export default {
     flag: String,
     runtime: Number,
     backdrop: String,
-    size: String,
+    small: Boolean,
+    seasons: Number,
   },
   data() {
     return {
@@ -65,13 +66,19 @@ export default {
         width: this.vote * 10 + "%",
       },
       usedImage() {
-        console.log(this.size);
+
         if (this.image!==null && this.backdrop!== null){
-        if (this.size === "sm") return this.backdrop;
+        if (this.small) return this.backdrop;
         else {
            return this.image;
         }}
       },
+      seasonsOrMinutes() {
+        if(this.runtime)
+          return this.toHoursAndMinutes(this.runtime)
+        else
+          return `${this.seasons} Seasons`
+      }
     };
   },
   mounted() {},
@@ -90,7 +97,9 @@ export default {
       console.log("load");
     },
     year(release) {
-      return release.split("-").at(0);
+        if(typeof release === "string"){
+        let year = release.split("-")|| ''
+        return year[0]}
     },
   },
 };
@@ -137,8 +146,12 @@ div {
       object-fit: cover;
       object-position: left;
       width: 100%;
-      height: 180px;
+      //height: 180px;
+      &.smallImg {
+        height: 180px;
+      }
     }
+    
     .content {
       display: none !important;
       position: absolute;
