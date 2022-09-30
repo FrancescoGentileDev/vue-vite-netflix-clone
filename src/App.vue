@@ -3,8 +3,8 @@
     <header-section @text="inputText" />
     <div v-if="loading">COCCOBELLO</div>
     <div class="fg-container">
-      <content-section v-if="!loading" :popularFilm="popularTV"/>
-      <content-section v-if="!loading" :popularFilm="popularTV" />
+      <content-section v-if="!loading" :popularFilm="popularTV" :small="false"/>
+      <content-section v-if="!loading" :popularFilm="popularTV" :small="true" />
     </div>
   </div>
 </template>
@@ -39,7 +39,7 @@ export default {
     };
   },
   async created() {
-    setTimeout(async () => {
+    
       let popularMovie = new Call({ language: "it-IT", adult: false });
 
       await popularMovie.makeCall("movie", "popular").then((res) => {
@@ -47,17 +47,17 @@ export default {
           this.popularFilm = value.results;
         });
       });
-    }, 500);
+   
 
-    setTimeout(async () => {
-      let popularTV = new Call({ language: "it-IT", adult: false });
+
+      let popularTV =await new Call({ language: "it-IT", adult: false });
       await popularTV.makeCall("tv", "popular").then((res) => {
         popularTV.moreInformationAllTV(res).then((value) => {
           console.log(value);
           this.popularTV = value.results;
         });
       });
-    }, 500);
+
   },
   mounted() {
     this.$nextTick(() => {

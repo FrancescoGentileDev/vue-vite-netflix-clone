@@ -59,38 +59,40 @@ class Call {
   async moreInformationAllMovie(response) {
     const response_1 = new Promise(async (resolve) => {
       response.results.forEach(async (value, index) => {
-        let info = await this.getMoreInformation(value.id, 5);
 
-        let {
-          backdrop_path,
-          genres,
-          production_countries,
-          release_date,
-          runtime,
-          belongs_to_collection,
-        } = info;
-        if (production_countries.length === 0) production_countries.push({ iso_3166_1: "US" });
-        if (value.poster_path !== null || backdrop_path !== null) {
-          response.results[index].image = this.getImage(index, 5, value.poster_path);
-          response.results[index].backdrop = this.getImage(index, 5, backdrop_path);
-        } else {
-          response.results[index].image =
-            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
-          response.results[index].backdrop =
-            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
-        }
-        response.results[index].flag = this.getFlag(production_countries[0].iso_3166_1);
-        response.results[index].languageCode = value.original_language;
-        response.results[index].original_language = codeToLanguage[value.original_language];
-        response.results[index] = {
-          ...value,
-          backdrop_path,
-          genres,
-          production_countries,
-          release_date,
-          runtime,
-          belongs_to_collection,
-        };
+          let info = await this.getMoreInformation(value.id, 5);
+
+          let {
+            backdrop_path,
+            genres,
+            production_countries,
+            release_date,
+            runtime,
+            belongs_to_collection,
+          } = info;
+          if (production_countries.length === 0) production_countries.push({ iso_3166_1: "US" });
+          if (value.poster_path !== null || backdrop_path !== null) {
+            response.results[index].image = this.getImage(index, 5, value.poster_path);
+            response.results[index].backdrop = this.getImage(index, 5, backdrop_path);
+          } else {
+            response.results[index].image =
+              "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+            response.results[index].backdrop =
+              "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+          }
+          response.results[index].flag = this.getFlag(production_countries[0].iso_3166_1);
+          response.results[index].languageCode = value.original_language;
+          response.results[index].original_language = codeToLanguage[value.original_language];
+          response.results[index] = {
+            ...value,
+            backdrop_path,
+            genres,
+            production_countries,
+            release_date,
+            runtime,
+            belongs_to_collection,
+          };
+
       });
       this.results = response;
       resolve(response);

@@ -41,7 +41,7 @@
           :flag="item.flag"
           :runtime="item.runtime"
           :seasons="item.seasons"
-          :small="true"
+          :small="small"
         />
       </div>
     </article>
@@ -58,7 +58,7 @@ export default {
       carousel: "",
       scrolledCarousel: 0,
       scrollWidth: 1600,
-      scrollLimit: -4626,
+      scrollLimit: -4400,
     };
   },
   mounted() {
@@ -68,25 +68,27 @@ export default {
     popularFilm: Array,
     sectionTitle: String,
     carouselId: String,
+    small: Boolean,
   },
   methods: {
     scroll(direction) {
       let carousel = this.$refs.carousel;
       console.log(this.$refs.carousel, carousel.scrollWidth);
-      let number = 4
+      let number = 4;
+
       if (direction == "right") {
-        this.scrolledCarousel = this.scrolledCarousel - carousel.scrollWidth /number;
+        this.scrolledCarousel = this.scrolledCarousel - (carousel.scrollWidth /number);
         carousel.style.left = `${this.scrolledCarousel}px`;
       }
       if (direction == "left") {
-        this.scrolledCarousel = this.scrolledCarousel + carousel.scrollWidth /number;
+        this.scrolledCarousel =this.scrolledCarousel + (carousel.scrollWidth /number);
         carousel.style.left = `${this.scrolledCarousel}px`;
       }
 
-      if (carousel.scrollWidth >= this.scrolledCarousel) {
-        document.getElementsByClassName("left");
+      if(this.scrolledCarousel < -4400 ) {
+        carousel.style.left = `${-4370}px`;
       }
-      console.log(this.scrollWidth, this.scrolledCarousel, this.scrollLimit);
+      console.log(carousel.scrollWidth, this.scrolledCarousel, this.scrollLimit);
     },
   },
 };
