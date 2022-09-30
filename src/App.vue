@@ -108,7 +108,7 @@ export default {
 body {
   background-color: #221f1f;
   color: $white-color;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 #app {
   font-family: "Twemoji Country Flags", Avenir, Helvetica, Arial, sans-serif;

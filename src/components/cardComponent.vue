@@ -205,9 +205,9 @@ div {
 
     &:hover {
       transform: scale(1.1);
-      z-index: 500 !important;
+      z-index: 1000;
       border: $borderSize solid $brand-color;
-
+      
       .content {
         display: flex !important;
         border: $borderSize solid $brand-color;
