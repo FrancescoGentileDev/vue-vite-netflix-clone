@@ -108,10 +108,12 @@ export default {
 body {
   background-color: #221f1f;
   color: $white-color;
+  overflow-x: hidden;
 }
 #app {
   font-family: "Twemoji Country Flags", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
 }
 </style>

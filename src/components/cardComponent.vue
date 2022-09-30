@@ -135,11 +135,12 @@ button {
 }
 
 div {
-  max-width: 300px;
+ 
   background-color: transparent;
   $borderSize: 2px;
 
   .card {
+    min-width: 300px;
     transition: transform 500ms linear;
     position: relative;
     img {
@@ -204,7 +205,7 @@ div {
 
     &:hover {
       transform: scale(1.1);
-      z-index: 1000;
+      z-index: 500 !important;
       border: $borderSize solid $brand-color;
 
       .content {
