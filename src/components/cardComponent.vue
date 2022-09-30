@@ -127,7 +127,7 @@ button {
   font-weight: 100;
   border: 3px solid $white-color;
   border-radius: 50%;
-  transition: all 0.3s linear;
+  transition: all 0.8s linear;
   &:hover {
     border: 0px;
     background-color: $brand-color;
@@ -141,7 +141,7 @@ div {
 
   .card {
     min-width: 300px;
-    transition: transform 500ms linear;
+    transition: transform 200ms linear;
     position: relative;
     img {
       object-fit: cover;

@@ -3,7 +3,8 @@
     <header-section @text="inputText" />
     <div v-if="loading">COCCOBELLO</div>
     <div class="fg-container">
-      <content-section v-if="!loading" :popularFilm="popularFilm" />
+      <content-section v-if="!loading" :popularFilm="popularTV"/>
+      <content-section v-if="!loading" :popularFilm="popularTV" />
     </div>
   </div>
 </template>
@@ -38,38 +39,31 @@ export default {
     };
   },
   async created() {
-    let popularMovie = new Call({ language: "it-IT", adult: false });
+    setTimeout(async () => {
+      let popularMovie = new Call({ language: "it-IT", adult: false });
 
-    popularMovie.makeCall("movie", "popular").then((res) => {
-       popularMovie.moreInformationAllMovie(res).then(value => {
-        this.popularFilm = value.results;
-      }
-      )      
-    });
-    
-    let popularTV = new Call({ language: "it-IT", adult: false });
+      await popularMovie.makeCall("movie", "popular").then((res) => {
+        popularMovie.moreInformationAllMovie(res).then((value) => {
+          this.popularFilm = value.results;
+        });
+      });
+    }, 500);
 
-    popularTV.makeCall("tv", "popular").then((res) => {
-       popularTV.moreInformationAllTV(res).then(value => {
-        console.log(value)
-        this.popularTV = value.results
-      }
-      )   
-      
-      
-
-    });
-
-
-
-
-    
+    setTimeout(async () => {
+      let popularTV = new Call({ language: "it-IT", adult: false });
+      await popularTV.makeCall("tv", "popular").then((res) => {
+        popularTV.moreInformationAllTV(res).then((value) => {
+          console.log(value);
+          this.popularTV = value.results;
+        });
+      });
+    }, 500);
   },
   mounted() {
     this.$nextTick(() => {
-        setTimeout(() => {
-          this.loading = false;
-        }, 500);
+      setTimeout(() => {
+        this.loading = false;
+      }, 500);
     });
   },
   methods: {
@@ -84,16 +78,16 @@ export default {
       if (searchInput !== "") {
         let search = await new Call({
           query: searchInput,
-          adult:false,
-          language: "it-IT"
+          adult: false,
+          language: "it-IT",
         })
           .makeCall("search", "movie")
           .then((value) => {
             console.log(value);
             arr = value.results;
-             console.log(arr)
+            console.log(arr);
           });
-       
+
         this.callSearch = search;
       }
       return arr;
@@ -114,6 +108,5 @@ body {
   font-family: "Twemoji Country Flags", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
 }
 </style>

@@ -3,15 +3,28 @@
     <article class="scroll">
       <div class="scroller">
         <div class="buttons">
-          <button @click="scroll('left')" :disabled="scrollCarousel === 0" class="left">
+          <button @click="scroll('left')" :disabled="scrolledCarousel === 0" class="left">
             <font-awesome-icon icon="fa-solid fa-angle-left left" />
           </button>
-          <button @click="scroll('right')" :disabled="scrollCarousel <= scrollLimit" class="right">
+          <button
+            @click="scroll('right')"
+            :disabled="scrolledCarousel <= scrollLimit"
+            class="right"
+          >
             <font-awesome-icon icon="fa-solid fa-angle-right right" />
           </button>
         </div>
       </div>
-      <div class="card-container" id="carousel">
+      <div
+        class="card-container"
+        ref="carousel"
+        :style="{
+          left: '0px',
+          display: 'flex',
+          position: 'relative',
+          transition: 'left .5s linear',
+        }"
+      >
         <card-component
           class="card"
           v-for="(item, index) in popularFilm"
@@ -42,43 +55,38 @@ export default {
   components: { cardComponent },
   data() {
     return {
-      scrollCarousel: 0,
-      get scrollLimit() {
-        return -this.scrollWidth + this.scrollWidth / 4;
-      },
-
-      scrollWidth() {
-        let carousel = document.getElementById("carousel");
-        return carousel.scrollWidth;
-      },
+      carousel: "",
+      scrolledCarousel: 0,
+      scrollWidth: 1600,
+      scrollLimit: -4626,
     };
   },
-  created() {
-    console.log(this.popularFilm);
-    let carousel = document.getElementById("carousel");
-    this.scrollWidth = carousel.scrollWidth;
+  mounted() {
+
   },
   props: {
     popularFilm: Array,
     sectionTitle: String,
+    carouselId: String,
   },
   methods: {
     scroll(direction) {
-      let carousel = document.getElementById("carousel");
-
+      let carousel = this.$refs.carousel;
+      console.log(this.$refs.carousel, carousel.scrollWidth);
+      let number = 4
       if (direction == "right") {
-        this.scrollCarousel = this.scrollCarousel - carousel.scrollWidth / 4;
-        carousel.style.left = `${this.scrollCarousel}px`;
+        this.scrolledCarousel = this.scrolledCarousel - carousel.scrollWidth /number;
+        carousel.style.left = `${this.scrolledCarousel}px`;
       }
       if (direction == "left") {
-        this.scrollCarousel = this.scrollCarousel + carousel.scrollWidth / 4;
-        carousel.style.left = `${this.scrollCarousel}px`;
+        this.scrolledCarousel = this.scrolledCarousel + carousel.scrollWidth /number;
+        carousel.style.left = `${this.scrolledCarousel}px`;
       }
 
-      if (carousel.scrollWidth >= this.scrollCarousel) {
+      if (carousel.scrollWidth >= this.scrolledCarousel) {
         document.getElementsByClassName("left");
       }
-      console.log(carousel.scrollWidth, this.scrollCarousel, this.scrollLimit);
+      console.log(this.scrollWidth, this.scrolledCarousel, this.scrollLimit);
     },
   },
 };
@@ -128,13 +136,11 @@ article {
   }
 
   .card-container {
-    display: flex;
-    position: relative;
-    left: 0;
-    flex-direction: row;
-    margin-left: 2rem;
+    margin-left: 3rem;
     overflow-y: visible;
-    transition: left .5s linear;
+    .card {
+      margin: 0.2rem;
+    }
   }
 }
 </style>
