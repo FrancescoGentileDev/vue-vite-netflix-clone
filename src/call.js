@@ -53,30 +53,97 @@ class Call {
       return data;
     });
 
-    return new Promise(async (resolve) => {
+    return response;
+  }
+
+  async moreInformationAllMovie(response) {
+    const response_1 = new Promise(async (resolve) => {
       response.results.forEach(async (value, index) => {
-        let info = await this.getMoreInformation(value.id, 5)
-        let { backdrop_path, genres, production_countries, release_date, runtime, belongs_to_collection } = info
-        if (production_countries.length === 0) production_countries.push({ iso_3166_1: "US" })
-        if(value.poster_path!==null || backdrop_path!==null){
-        response.results[index].image =await this.getImage(index, 5, value.poster_path);
-          response.results[index].backdrop = await this.getImage(index, 5, backdrop_path);
+        let info = await this.getMoreInformation(value.id, 5);
+
+        let {
+          backdrop_path,
+          genres,
+          production_countries,
+          release_date,
+          runtime,
+          belongs_to_collection,
+        } = info;
+        if (production_countries.length === 0) production_countries.push({ iso_3166_1: "US" });
+        if (value.poster_path !== null || backdrop_path !== null) {
+          response.results[index].image = this.getImage(index, 5, value.poster_path);
+          response.results[index].backdrop = this.getImage(index, 5, backdrop_path);
+        } else {
+          response.results[index].image =
+            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+          response.results[index].backdrop =
+            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
         }
-        else {
-          response.results[index].image = "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg"
-          response.results[index].backdrop = "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg"
-        }
-        response.results[index].flag =await this.getFlag(production_countries[0].iso_3166_1);
+        response.results[index].flag = this.getFlag(production_countries[0].iso_3166_1);
         response.results[index].languageCode = value.original_language;
         response.results[index].original_language = codeToLanguage[value.original_language];
-       
-        response.results[index] = { ...value, backdrop_path, genres, production_countries, release_date, runtime,belongs_to_collection };
+        response.results[index] = {
+          ...value,
+          backdrop_path,
+          genres,
+          production_countries,
+          release_date,
+          runtime,
+          belongs_to_collection,
+        };
       });
       this.results = response;
       resolve(response);
-    }).then((response) => {
-      return response;
     });
+    return response_1;
+  }
+
+  async moreInformationAllTV(response) {
+    const response_1 = new Promise(async (resolve) => {
+      response.results.forEach(async (value, index) => {
+        let info = await this.getMoreInformation(value.id, 5);
+        //TV       name/title     first_air_date/release_date  originCountry/production_countries season[]/production_countries
+
+        let {
+          backdrop_path,
+          genres,
+          origin_country,
+          first_air_date,
+          seasons,
+          belongs_to_collection,
+        } = info;
+
+        if (value.poster_path !== null || backdrop_path !== null) {
+          response.results[index].image = this.getImage(index, 5, value.poster_path);
+          response.results[index].backdrop = this.getImage(index, 5, backdrop_path);
+        } else {
+          response.results[index].image =
+            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+          response.results[index].backdrop =
+            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+        }
+
+        response.results[index].flag = this.getFlag(origin_country[0]);
+        response.results[index].languageCode = value.original_language;
+        response.results[index].original_language = codeToLanguage[value.original_language];
+        seasons = seasons.length;
+
+        response.results[index] = {
+          title: value.name,
+          release_date: first_air_date,
+          backdrop_path,
+          genres,
+          origin_country,
+          first_air_date,
+          seasons,
+          belongs_to_collection,
+          ...value,
+        };
+      });
+      this.results = response;
+      resolve(response);
+    });
+    return response_1;
   }
 
   async nextPage() {
@@ -100,27 +167,22 @@ class Call {
       return await this.makeCall(this.path);
     }
   }
-  async getImage(index = 0, numberSize = 4, poster_path) {
-    let path
-    if (poster_path)
-      path = poster_path
-    else
-      path = this.results.results[index].poster_path
-    
+  getImage(index = 0, numberSize = 4, poster_path) {
+    let path;
+    if (poster_path) path = poster_path;
+    else path = this.results.results[index].poster_path;
+
     let sizes = ["w92", "w154", "w185", "w342", "w500", "w780", "original"];
-    let result =
-      "https://image.tmdb.org/t/p/" + sizes[numberSize] + path;
+    let result = "https://image.tmdb.org/t/p/" + sizes[numberSize] + path;
 
     return result;
   }
-   
-  async getFlag(country) {
+
+  getFlag(country) {
     if (!country) {
-      country = "US"
+      country = "US";
     }
-    const codePoints = country
-      .split("")
-      .map((char) => 127397 + char.charCodeAt());
+    const codePoints = country.split("").map((char) => 127397 + char.charCodeAt());
     // console.log(codePoints)
     return String.fromCodePoint(...codePoints);
   }
@@ -134,5 +196,5 @@ class Call {
     return response;
   }
 }
-let count = 0
+let count = 0;
 export default Call;
