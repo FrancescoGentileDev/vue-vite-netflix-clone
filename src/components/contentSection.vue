@@ -1,7 +1,8 @@
 <template>
   <div class="content">
+  <h3 class="mx-5 mb-2 mt-4" >{{title}}</h3>
     <article class="scroll">
-      <div class="scroller">
+      <div v-if="showCarousel" class="scroller">
         <div class="buttons">
           <button @click="scroll('left')" :disabled="scrolledCarousel === 0" class="left">
             <font-awesome-icon icon="fa-solid fa-angle-left left" />
@@ -15,16 +16,7 @@
           </button>
         </div>
       </div>
-      <div
-        class="card-container"
-        ref="carousel"
-        :style="{
-          left: '0px',
-          display: 'flex',
-          position: 'relative',
-          transition: 'left .5s linear',
-        }"
-      >
+      <div  ref="carousel" :style="carouselStyle" :class="{noCarousel: !showCarousel, 'card-container' : showCarousel}">
         <card-component
           class="card"
           v-for="(item, index) in popularFilm"
@@ -59,16 +51,21 @@ export default {
       scrolledCarousel: 0,
       scrollWidth: 1600,
       scrollLimit: -4400,
+      carouselStyle: {
+        left: "0px",
+      },
     };
   },
   mounted() {
-
+    console.log("mount", this.popularFilm)
   },
   props: {
     popularFilm: Array,
     sectionTitle: String,
     carouselId: String,
     small: Boolean,
+    showCarousel: Boolean,
+    title: String,
   },
   methods: {
     scroll(direction) {
@@ -77,15 +74,15 @@ export default {
       let number = 4;
 
       if (direction == "right") {
-        this.scrolledCarousel = this.scrolledCarousel - (carousel.scrollWidth /number);
+        this.scrolledCarousel = this.scrolledCarousel - carousel.scrollWidth / number;
         carousel.style.left = `${this.scrolledCarousel}px`;
       }
       if (direction == "left") {
-        this.scrolledCarousel =this.scrolledCarousel + (carousel.scrollWidth /number);
+        this.scrolledCarousel = this.scrolledCarousel + carousel.scrollWidth / number;
         carousel.style.left = `${this.scrolledCarousel}px`;
       }
 
-      if(this.scrolledCarousel < -4400 ) {
+      if (this.scrolledCarousel < -4400) {
         carousel.style.left = `${-4370}px`;
       }
       console.log(carousel.scrollWidth, this.scrolledCarousel, this.scrollLimit);
@@ -96,7 +93,9 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/variables";
-
+h3 {
+  text-transform: capitalize;
+}
 article {
   position: relative;
   display: flex;
@@ -119,16 +118,22 @@ article {
       top: 0;
       left: 0;
       button {
-        height: 100%;
+        height: 80%;
         width: 3rem;
         border: none;
         background: rgba($backround-secondary, 0.8);
 
         &.right {
           position: absolute;
-          top: 0;
+          top: 50%;
           left: 100vw;
-          transform: translateX(-100%);
+           width: 5rem;
+          transform: translate(-100%, -50%);
+        }
+        &.left {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
         }
         &:disabled {
           display: none;
@@ -140,9 +145,30 @@ article {
   .card-container {
     margin-left: 3rem;
     overflow-y: visible;
+    display: flex;
+    position: relative;
+    transition: left 0.5s linear;
     .card {
       margin: 0.2rem;
     }
   }
+
+
+  .noCarousel {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1800px;
+    margin: 0 auto;
+
+    .card {
+      max-width: 200px;
+      min-height: 190px;
+    }
+  }
+
+
+
+
+
 }
 </style>

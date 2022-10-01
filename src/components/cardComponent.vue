@@ -137,7 +137,7 @@ button {
 div {
  
   background-color: transparent;
-  $borderSize: 2px;
+  $borderSize: 3px;
 
   .card {
     min-width: 300px;
@@ -206,7 +206,8 @@ div {
     &:hover {
       transform: scale(1.1);
       z-index: 1000;
-      border: $borderSize solid $brand-color;
+       outline: $borderSize solid $brand-color;
+       outline-offset: -1px;
       
       .content {
         display: flex !important;
@@ -215,6 +216,8 @@ div {
         height: 200px;
       }
     }
+  }
+  &:hover {
   }
 }
 </style>

@@ -2,9 +2,30 @@
   <div id="app">
     <header-section @text="inputText" />
     <div v-if="loading">COCCOBELLO</div>
-    <div class="fg-container">
-      <content-section v-if="!loading" :popularFilm="popularTV" :small="false"/>
-      <content-section v-if="!loading" :popularFilm="popularTV" :small="true" />
+
+    <div class="fg-container" v-if="searchText === '' && !loading">
+      <content-section
+        :popularFilm="popularTV.results"
+        :small="false"
+        :showCarousel="true"
+        :title="popularTV.title"
+      />
+      <content-section
+        :popularFilm="popularFilm.results"
+        :showCarousel="true"
+        :small="true"
+        :title="popularFilm.title"
+      />
+
+      <content-section v-for="(item, index) in byCategoryMovie" :key="index"
+        :popularFilm="item.results"
+        :showCarousel="true"
+        :small="true"
+        :title="item.title"
+      />
+    </div>
+    <div>
+      <content-section :popularFilm="search" :small="true" :showCarousel="false" />
     </div>
   </div>
 </template>
@@ -33,62 +54,92 @@ export default {
 
       popularFilm: [],
       popularTV: [],
+      byCategoryMovie: [],
 
-      callPopular: Call,
-      callSearch: Call,
+      callFilm: [],
+      callTV: [],
     };
   },
-  async created() {
-    
-      let popularMovie = new Call({ language: "it-IT", adult: false });
+  async mounted() {
+      const getByCategoryMovie = (async (genres) =>  {
+      let category = new Call({ language: "it-IT", adult: false, with_genres: genres });
 
-      await popularMovie.makeCall("movie", "popular").then((res) => {
-        popularMovie.moreInformationAllMovie(res).then((value) => {
-          this.popularFilm = value.results;
+      let res =await  new Promise((resolve)=> {
+       category.makeCall("discover", "movie").then(async (res) => {
+         category.moreInformationAllMovie(res).then((value) => {
+          resolve(value)
+          // this.category.push({ results: value.results, title: "Last Release" });
         });
       });
-   
+      })
+      .then((value) => value)
+      return res
 
+    })
+    let popularMovie = new Call({ language: "it-IT", adult: false });
 
-      let popularTV =await new Call({ language: "it-IT", adult: false });
-      await popularTV.makeCall("tv", "popular").then((res) => {
-        popularTV.moreInformationAllTV(res).then((value) => {
-          console.log(value);
-          this.popularTV = value.results;
-        });
+    await popularMovie.makeCall("movie", "popular").then(async (res) => {
+      await popularMovie.moreInformationAllMovie(res).then((value) => {
+        this.popularFilm = { results: value.results, title: "Popular Now" };
+        this.callFilm = popularMovie;
       });
-
-  },
-  mounted() {
-    this.$nextTick(() => {
-      setTimeout(() => {
-        this.loading = false;
-      }, 500);
     });
+
+    let popularTV = new Call({ language: "it-IT", adult: false });
+
+    await popularTV.makeCall("tv", "popular").then(async (res) => {
+      await popularTV.moreInformationAllTV(res).then((value) => {
+        this.popularTV = { results: value.results, title: "Last Release" };
+        this.callTv = popularTV;
+      });
+    });
+
+
+    let allCategoryMovie = new Call({ language: "it-IT", adult: false });
+
+    allCategoryMovie= await allCategoryMovie.makeCall("genre","movie","list")
+    let randomCategoryMovie = allCategoryMovie.genres.filter(() => {
+      let rand = Math.round(Math.random())
+      return rand
+    })
+
+  console.log("random",randomCategoryMovie)
+
+  randomCategoryMovie.forEach((genre) => {
+
+    getByCategoryMovie(genre.id).then((value) => {
+      this.byCategoryMovie.push({ results: value.results, title: genre.name });
+      console.log("category", this.byCategoryMovie);
+    });
+  })
+    
+
+    this.loading = false;
   },
   methods: {
     inputText(value) {
       this.searchText = value.trim().toLowerCase();
     },
   },
+
   asyncComputed: {
     async search() {
       const searchInput = this.searchText;
-      let arr = this.popularFilm;
+      let arr = [];
       if (searchInput !== "") {
-        let search = await new Call({
+        let search = new Call({
           query: searchInput,
           adult: false,
           language: "it-IT",
-        })
-          .makeCall("search", "movie")
-          .then((value) => {
-            console.log(value);
-            arr = value.results;
-            console.log(arr);
-          });
+        });
 
-        this.callSearch = search;
+        await search.makeCall("search", "multi").then(async (res) => {
+          await search.moreInformationAllMulti(res).then((value) => {
+            arr = value.results;
+          });
+        });
+        console.log("arr", arr);
+        return arr;
       }
       return arr;
     },
@@ -102,11 +153,12 @@ export default {
 body {
   background-color: #221f1f;
   color: $white-color;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 #app {
   font-family: "Twemoji Country Flags", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding-bottom: 15rem;
 }
 </style>
