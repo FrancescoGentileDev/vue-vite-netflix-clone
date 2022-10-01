@@ -4,6 +4,9 @@
     <div v-if="loading">COCCOBELLO</div>
 
     <div class="fg-container" v-if="searchText === '' && !loading">
+
+      <video-section :video="popularTV.results[0].id"/>
+
       <content-section
         :popularFilm="popularTV.results"
         :small="false"
@@ -39,15 +42,18 @@ import key from "./key";
 import Call from "./call";
 // eslint-disable-next-line no-unused-vars
 import axios from "axios";
+import VideoSection from './components/videoSection.vue';
 
 export default {
   name: "App",
   components: {
     HeaderSection,
     ContentSection,
+    VideoSection,
   },
 
   data() {
+
     return {
       apiKey: key,
       baseUrl: "https://api.themoviedb.org/3",
@@ -101,7 +107,6 @@ export default {
     randomCategoryMovie.forEach((genre) => {
       categoryMovie.getByCategory(genre.id).then((value) => {
         this.byCategoryMovie.push({ results: value.results, title: genre.name });
-        console.log("category", this.byCategoryMovie);
       });
     });
 
@@ -154,6 +159,10 @@ body {
   background-color: #221f1f;
   color: $white-color;
   overflow-x: hidden;
+}
+.fg-container {
+  position: relative;
+  z-index: 10;
 }
 #app {
   font-family: "Twemoji Country Flags", Avenir, Helvetica, Arial, sans-serif;

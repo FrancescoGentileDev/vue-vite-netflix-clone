@@ -57,7 +57,6 @@ export default {
     };
   },
   mounted() {
-    console.log("mount", this.popularFilm)
   },
   props: {
     popularFilm: Array,

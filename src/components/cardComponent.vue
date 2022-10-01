@@ -1,7 +1,7 @@
 <template>
-  <div class="mother" >
+  <div class="mother">
     <div class="card" :id="id">
-      <img v-lazy="image" :alt="title" @load="prova" :class="{smallImg: small}"/>
+      <img v-lazy="usedImage()" :alt="title" :class="{ smallImg: small }" />
       <div class="content p-2 pt-4 d-flex flex-column justify-content-between">
         <div class="buttons d-flex justify-content-between">
           <div class="">
@@ -31,7 +31,7 @@
           <div class="date">
             <span class="fw-bold">{{ year(release) }}⠀</span>
 
-            {{seasonsOrMinutes() }}
+            {{ seasonsOrMinutes() }}
           </div>
           <div class="stars">
             <p :style="getStars" class="m-0 bars">★★★★★</p>
@@ -65,7 +65,7 @@ export default {
       getStars: {
         width: this.vote * 10 + "%",
       },
-      usedImage() {
+       usedImage() {
 
         if (this.image!==null && this.backdrop!== null){
         if (this.small) return this.backdrop;
@@ -74,14 +74,20 @@ export default {
         }}
       },
       seasonsOrMinutes() {
-        if(this.runtime)
-          return this.toHoursAndMinutes(this.runtime)
-        else
-          return `${this.seasons} Seasons`
-      }
+        if (this.runtime) return this.toHoursAndMinutes(this.runtime);
+        else return `${this.seasons} Seasons`;
+      },
+      useImage: this.image,
     };
   },
-  mounted() {},
+  mounted() {
+    if (this.image !== null && this.backdrop !== null) {
+      if (this.small) this.useImage = this.backdrop;
+      else {
+        this.useImage = this.image;
+      }
+    }
+  },
   methods: {
     toHoursAndMinutes(totalMinutes) {
       const minutes = totalMinutes % 60;
@@ -94,12 +100,13 @@ export default {
       return num.toString().padStart(2, "0");
     },
     prova() {
-      console.log("load");
+      // console.log("load");
     },
     year(release) {
-        if(typeof release === "string"){
-        let year = release.split("-")|| ''
-        return year[0]}
+      if (typeof release === "string") {
+        let year = release.split("-") || "";
+        return year[0];
+      }
     },
   },
 };
@@ -135,24 +142,27 @@ button {
 }
 
 div {
- 
   background-color: transparent;
   $borderSize: 3px;
+  $borderRadius: 20px;
 
   .card {
     min-width: 300px;
     transition: transform 200ms linear;
     position: relative;
+    border-radius: $borderRadius;
     img {
       object-fit: cover;
       object-position: left;
       width: 100%;
+
       //height: 180px;
       &.smallImg {
         height: 180px;
+        border-radius: $borderRadius;
       }
     }
-    
+
     .content {
       display: none !important;
       position: absolute;
@@ -206,18 +216,23 @@ div {
     &:hover {
       transform: scale(1.1);
       z-index: 1000;
-       outline: $borderSize solid $brand-color;
-       outline-offset: -1px;
-      
+      outline: $borderSize solid $brand-color;
+      outline-offset: -1px;
+      border-radius: 0;
       .content {
         display: flex !important;
         border: $borderSize solid $brand-color;
         border-top: none;
-        height: 200px;
+        height: 250px;
+        
+      }
+      img.smallImg {
+        border-radius: 0;
       }
     }
-  }
-  &:hover {
+    img.smallImg ~ .content {
+      height: 200px !important;
+    }
   }
 }
 </style>

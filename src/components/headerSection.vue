@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row head">
     <div class="mb-3 col-2">
       <label for="" class="form-label">Search Film</label>
       <input
@@ -32,4 +32,13 @@ methods: {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@import "@/variables";
+.head {
+  position: fixed;
+  z-index: 100000;
+  width: 101%;
+  background-color: rgba($backround-primary, $alpha: 0.7);
+  
+}
+</style>
