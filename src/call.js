@@ -56,12 +56,17 @@ class Call {
     return response;
   }
 
-  async moreInformationAllMovie(response) {
+  async moreInformationAllMulti(response) {
     const response_1 = new Promise(async (resolve) => {
+      response.results = response.results.filter((value, index) => {
+        if (value.media_type !== "person")
+          return true
+      })
+
       response.results.forEach(async (value, index) => {
-
-          let info = await this.getMoreInformation(value.id, 5);
-
+        // console.log(value)
+        let info = await this.getMoreInformation(value.id, value.media_type);
+        if (value.media_type === "movie") {
           let {
             backdrop_path,
             genres,
@@ -70,6 +75,7 @@ class Call {
             runtime,
             belongs_to_collection,
           } = info;
+
           if (production_countries.length === 0) production_countries.push({ iso_3166_1: "US" });
           if (value.poster_path !== null || backdrop_path !== null) {
             response.results[index].image = this.getImage(index, 5, value.poster_path);
@@ -92,7 +98,87 @@ class Call {
             runtime,
             belongs_to_collection,
           };
+        } else if (value.media_type === "tv") {
+          let {
+            backdrop_path,
+            genres,
+            origin_country,
+            first_air_date,
+            seasons,
+            belongs_to_collection,
+          } = info;
 
+          if (value.poster_path !== null || backdrop_path !== null) {
+            response.results[index].image = this.getImage(index, 5, value.poster_path);
+            response.results[index].backdrop = this.getImage(index, 5, backdrop_path);
+          } else {
+            response.results[index].image =
+              "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+            response.results[index].backdrop =
+              "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+          }
+
+          response.results[index].flag = this.getFlag(origin_country[0]);
+          response.results[index].languageCode = value.original_language;
+          response.results[index].original_language = codeToLanguage[value.original_language];
+          seasons = seasons.length;
+
+          response.results[index] = {
+            title: value.name,
+            release_date: first_air_date,
+            backdrop_path,
+            genres,
+            origin_country,
+            first_air_date,
+            seasons,
+            belongs_to_collection,
+            ...value,
+          };
+        }
+      });
+      // console.log("api", response)
+      this.results = response;
+      resolve(response);
+    });
+    return response_1;
+  }
+
+  async moreInformationAllMovie(response) {
+    const response_1 = new Promise(async (resolve) => {
+      response.results.forEach(async (value, index) => {
+        let info = await this.getMoreInformation(value.id);
+
+        let {
+          backdrop_path,
+          genres,
+          production_countries,
+          release_date,
+          runtime,
+          belongs_to_collection,
+        } = info;
+
+        if (production_countries.length === 0) production_countries.push({ iso_3166_1: "US" });
+        if (value.poster_path !== null || backdrop_path !== null) {
+          response.results[index].image = this.getImage(index, 5, value.poster_path);
+          response.results[index].backdrop = this.getImage(index, 5, backdrop_path);
+        } else {
+          response.results[index].image =
+            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+          response.results[index].backdrop =
+            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+        }
+        response.results[index].flag = this.getFlag(production_countries[0].iso_3166_1);
+        response.results[index].languageCode = value.original_language;
+        response.results[index].original_language = codeToLanguage[value.original_language];
+        response.results[index] = {
+          ...value,
+          backdrop_path,
+          genres,
+          production_countries,
+          release_date,
+          runtime,
+          belongs_to_collection,
+        };
       });
       this.results = response;
       resolve(response);
@@ -103,9 +189,7 @@ class Call {
   async moreInformationAllTV(response) {
     const response_1 = new Promise(async (resolve) => {
       response.results.forEach(async (value, index) => {
-        let info = await this.getMoreInformation(value.id, 5);
-        //TV       name/title     first_air_date/release_date  originCountry/production_countries season[]/production_countries
-
+        let info = await this.getMoreInformation(value.id);
         let {
           backdrop_path,
           genres,
@@ -189,11 +273,23 @@ class Call {
     return String.fromCodePoint(...codePoints);
   }
 
-  async getMoreInformation(id) {
+  async getMoreInformation(id, path) {
+    let type = ""
+    if (path)
+      type = path
+    else 
+      type = this.type
+      
+
+
+// console.log(path, type)
     let response = await axios
-      .get(`${this.baseURL}/${this.type}/${id}`, this.Params)
+      .get(`${this.baseURL}/${type}/${id}`, this.Params)
       .then(({ data }) => {
         return data;
+      })
+      .catch((err) => {
+        console.log("porco")
       });
     return response;
   }
