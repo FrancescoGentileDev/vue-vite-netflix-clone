@@ -59,14 +59,13 @@ class Call {
   async moreInformationAllMulti(response) {
     const response_1 = new Promise(async (resolve) => {
       response.results = response.results.filter((value, index) => {
-        if (value.media_type !== "person")
-          return true
-      })
+        if (value.media_type !== "person") return true;
+      });
 
       response.results.forEach(async (value, index) => {
         // console.log(value)
         let info = await this.getMoreInformation(value.id, value.media_type);
-        if (value.media_type === "movie") {
+        if (value.media_type === "movie" || this.type === "movie") {
           let {
             backdrop_path,
             genres,
@@ -98,7 +97,7 @@ class Call {
             runtime,
             belongs_to_collection,
           };
-        } else if (value.media_type === "tv") {
+        } else if (value.media_type === "tv" || this.type === "movie") {
           let {
             backdrop_path,
             genres,
@@ -273,23 +272,38 @@ class Call {
     return String.fromCodePoint(...codePoints);
   }
 
+
+
+  async getByCategory(genre) {
+    let category = new Call({ language: "it-IT", adult: false, with_genres: genre });
+
+    let res = await new Promise((resolve) => {
+      category.makeCall("discover", this.type).then(async (res) => {
+        category.moreInformationAllMulti(res).then((value) => {
+          resolve(value);
+          // this.category.push({ results: value.results, title: "Last Release" });
+        });
+      });
+    }).then((value) => value);
+    return res;
+  }
+
+
+
+
   async getMoreInformation(id, path) {
-    let type = ""
-    if (path)
-      type = path
-    else 
-      type = this.type
-      
+    let type = "";
+    if (path) type = path;
+    else type = this.type;
 
-
-// console.log(path, type)
+    // console.log(path, type)
     let response = await axios
       .get(`${this.baseURL}/${type}/${id}`, this.Params)
       .then(({ data }) => {
         return data;
       })
       .catch((err) => {
-        console.log("porco")
+        console.log("porco");
       });
     return response;
   }

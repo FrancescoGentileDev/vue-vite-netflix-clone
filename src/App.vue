@@ -17,7 +17,9 @@
         :title="popularFilm.title"
       />
 
-      <content-section v-for="(item, index) in byCategoryMovie" :key="index"
+      <content-section
+        v-for="(item, index) in byCategoryMovie"
+        :key="index"
         :popularFilm="item.results"
         :showCarousel="true"
         :small="true"
@@ -55,27 +57,16 @@ export default {
       popularFilm: [],
       popularTV: [],
       byCategoryMovie: [],
+      byCategoryTV: [],
 
       callFilm: [],
       callTV: [],
+
+      allMovieCategory: [],
+      allTvCategory: []
     };
   },
   async mounted() {
-      const getByCategoryMovie = (async (genres) =>  {
-      let category = new Call({ language: "it-IT", adult: false, with_genres: genres });
-
-      let res =await  new Promise((resolve)=> {
-       category.makeCall("discover", "movie").then(async (res) => {
-         category.moreInformationAllMovie(res).then((value) => {
-          resolve(value)
-          // this.category.push({ results: value.results, title: "Last Release" });
-        });
-      });
-      })
-      .then((value) => value)
-      return res
-
-    })
     let popularMovie = new Call({ language: "it-IT", adult: false });
 
     await popularMovie.makeCall("movie", "popular").then(async (res) => {
@@ -95,26 +86,35 @@ export default {
     });
 
 
-    let allCategoryMovie = new Call({ language: "it-IT", adult: false });
 
-    allCategoryMovie= await allCategoryMovie.makeCall("genre","movie","list")
+    let categoryMovie = new Call({ language: "it-IT", adult: false });
+
+    let allCategoryMovie = await categoryMovie.makeCall("genre", "movie", "list");
+
+    this.allMovieCategory = allCategoryMovie;
+
     let randomCategoryMovie = allCategoryMovie.genres.filter(() => {
-      let rand = Math.round(Math.random())
-      return rand
-    })
-
-  console.log("random",randomCategoryMovie)
-
-  randomCategoryMovie.forEach((genre) => {
-
-    getByCategoryMovie(genre.id).then((value) => {
-      this.byCategoryMovie.push({ results: value.results, title: genre.name });
-      console.log("category", this.byCategoryMovie);
+      let rand = Math.round(Math.random());
+      return rand;
     });
-  })
-    
 
-    this.loading = false;
+    randomCategoryMovie.forEach((genre) => {
+      categoryMovie.getByCategory(genre.id).then((value) => {
+        this.byCategoryMovie.push({ results: value.results, title: genre.name });
+        console.log("category", this.byCategoryMovie);
+      });
+    });
+
+
+
+this.$nextTick(()=> {
+  setTimeout(()=>{
+     this.loading = false;
+  },2000)
+  
+})
+
+   
   },
   methods: {
     inputText(value) {

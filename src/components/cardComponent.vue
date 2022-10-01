@@ -1,7 +1,7 @@
 <template>
   <div class="mother" >
     <div class="card" :id="id">
-      <img :src="usedImage()" :alt="title" @load="prova" :class="{smallImg: small}"/>
+      <img v-lazy="image" :alt="title" @load="prova" :class="{smallImg: small}"/>
       <div class="content p-2 pt-4 d-flex flex-column justify-content-between">
         <div class="buttons d-flex justify-content-between">
           <div class="">
