@@ -1,8 +1,9 @@
 <template>
   <div id="app">
     <loader-component v-if="loading"/>
-    <header-section  v-if="!loading" @text="inputText" />
-    <div class="fg-container" v-if="searchText === '' && !loading">
+    <pick-profile-component v-show="!loading" v-if="!pickProfile" @pickedProfile="profileSel"/>
+    <header-section  v-if="pickProfile" @text="inputText" :profile="pickedProfile"/>
+    <div class="fg-container" v-if="pickProfile && searchText === '' " v-cloak>
 
       <video-section :video="popularTV.results[0].id"/>
 
@@ -43,6 +44,7 @@ import Call from "./call";
 import axios from "axios";
 import VideoSection from './components/videoSection.vue';
 import LoaderComponent from './components/loaderComponent.vue';
+import PickProfileComponent from './components/pickProfileComponent.vue';
 
 export default {
   name: "App",
@@ -51,11 +53,14 @@ export default {
     ContentSection,
     VideoSection,
     LoaderComponent,
+    PickProfileComponent,
   },
 
   data() {
 
     return {
+      pickProfile: false,
+      pickedProfile: "",
       apiKey: key,
       baseUrl: "https://api.themoviedb.org/3",
       searchText: "",
@@ -126,6 +131,11 @@ this.$nextTick(()=> {
     inputText(value) {
       this.searchText = value.trim().toLowerCase();
     },
+    profileSel(prof) {
+      console.log(prof)
+      this.pickProfile= true;
+      this.pickedProfile=prof;
+    }
   },
 
   asyncComputed: {
