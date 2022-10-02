@@ -1,9 +1,7 @@
 <template>
   <div class="background">
     <div class="video-container">
-      <video autoplay muted loop>
-        <source src="../assets/stream.mp4" />
-      </video>
+      <video autoplay muted loop src="../assets/stream.mp4"></video>
 
       <div class="blockHover">
       </div>

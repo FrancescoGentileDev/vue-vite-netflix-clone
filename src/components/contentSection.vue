@@ -156,10 +156,13 @@ article {
   .noCarousel {
     display: flex;
     flex-wrap: wrap;
-    max-width: 1800px;
+    max-width: 1700px;
     margin: 0 auto;
+    gap: 10px;
+    justify-content: center;
 
     .card {
+      margin: 0 auto;
       max-width: 200px;
       min-height: 190px;
     }

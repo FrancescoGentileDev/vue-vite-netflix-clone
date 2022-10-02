@@ -1,8 +1,7 @@
 <template>
   <div id="app">
-    <header-section @text="inputText" />
-    <div v-if="loading">COCCOBELLO</div>
-
+    <loader-component v-if="loading"/>
+    <header-section  v-if="!loading" @text="inputText" />
     <div class="fg-container" v-if="searchText === '' && !loading">
 
       <video-section :video="popularTV.results[0].id"/>
@@ -30,7 +29,7 @@
       />
     </div>
     <div>
-      <content-section :popularFilm="search" :small="true" :showCarousel="false" />
+      <content-section class="search" :popularFilm="search" :small="true" :showCarousel="false" />
     </div>
   </div>
 </template>
@@ -43,6 +42,7 @@ import Call from "./call";
 // eslint-disable-next-line no-unused-vars
 import axios from "axios";
 import VideoSection from './components/videoSection.vue';
+import LoaderComponent from './components/loaderComponent.vue';
 
 export default {
   name: "App",
@@ -50,6 +50,7 @@ export default {
     HeaderSection,
     ContentSection,
     VideoSection,
+    LoaderComponent,
   },
 
   data() {
@@ -115,7 +116,7 @@ export default {
 this.$nextTick(()=> {
   setTimeout(()=>{
      this.loading = false;
-  },2000)
+  },2500)
   
 })
 
@@ -169,5 +170,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding-bottom: 15rem;
+}
+.search {
+      padding-top: 140px;
 }
 </style>
