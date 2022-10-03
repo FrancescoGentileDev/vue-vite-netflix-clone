@@ -1,8 +1,5 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,  
+  publicPath: 'vue-boolflix'
 })
-module.exports = {
-  devServer: {
-      proxy: 'https://maadhav-ytdl.herokuapp.com'
-  } }

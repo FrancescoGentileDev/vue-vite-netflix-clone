@@ -66,7 +66,6 @@ export default {
 
     await popularMovie.getArrayTitle("Popular Now", "movie", "popular").then((res) => {
       this.popularFilm = res;
-      console.log(res);
     });
 
     let popularTV = new Call({ language: "it-IT", adult: false });
@@ -86,8 +85,10 @@ export default {
       return rand;
     });
 
+      let category = new Call({ language: "it-IT", adult: false});
+      category.type = "movie"
     randomCategoryMovie.forEach((genre) => {
-      categoryMovie.getByCategory(genre.id).then((value) => {
+      category.getByCategory(genre.id).then((value) => {
         this.byCategoryMovie.push({ results: value.results, title: genre.name });
       });
     });
