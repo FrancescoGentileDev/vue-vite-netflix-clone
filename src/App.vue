@@ -18,7 +18,7 @@
     </div>
 
     <div>
-      <content-section class="search" :popularFilm="search" :small="true" :showCarousel="false" />
+      <content-section class="search" :titles="search" :small="true" :showCarousel="false" />
     </div>
   </div>
 </template>

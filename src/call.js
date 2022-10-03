@@ -109,7 +109,7 @@ class Call {
         mov = await this.moreInformationAllMovie(movies)
         moviesOrSeries.results = mov.results
         
-        console.log("dentro",mov)
+
       }
       if(tvs.results !== undefined){
         tvs = await this.moreInformationAllTV(tvs)
@@ -125,7 +125,7 @@ class Call {
       
       resolve(moviesOrSeries);
     });
-    console.log("response",response_1.results)
+
     return response_1;
   }
   /**

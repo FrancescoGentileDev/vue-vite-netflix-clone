@@ -50,8 +50,9 @@ export default {
 
 video {
   position: absolute;
-  width: 100%;
-  z-index: -1;
+    width: 115%;
+    z-index: -1;
+    top: -166px;
 
   source {
     width: 100%;
@@ -84,6 +85,9 @@ video {
   justify-content: center;
   margin-left: 7rem;
   max-width: 800px;
+  img {
+    max-width: 700px;
+  }
   .details {
     margin-left: 2rem;
     .title-line {

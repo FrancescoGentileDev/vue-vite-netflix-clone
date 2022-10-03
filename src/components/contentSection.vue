@@ -19,7 +19,7 @@
       <div  ref="carousel" :style="carouselStyle" :class="{noCarousel: !showCarousel, 'card-container' : showCarousel}">
         <card-component
           class="card"
-          v-for="(item, index) in popularFilm"
+          v-for="(item, index) in titles"
           :key="index"
           :image="item.image"
           :backdrop="item.backdrop"
@@ -59,7 +59,7 @@ export default {
   mounted() {
   },
   props: {
-    popularFilm: Array,
+    titles: Array,
     sectionTitle: String,
     carouselId: String,
     small: Boolean,

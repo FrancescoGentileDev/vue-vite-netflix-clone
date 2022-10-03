@@ -3,13 +3,13 @@
     <video-section logo="Rick_and_Morty.svg" title="Le avventure di nonno rick e suo nipote morty attraverso universi paralleli e CETRIOLI" video="rick_and_morty.mp4"/>
 
     <content-section
-      :popularFilm="popularTV.results"
+      :titles="popularTV.results"
       :small="false"
       :showCarousel="true"
       :title="popularTV.title"
     />
     <content-section
-      :popularFilm="popularFilm.results"
+      :titles="popularFilm.results"
       :showCarousel="true"
       :small="true"
       :title="popularFilm.title"
@@ -18,7 +18,7 @@
     <content-section
       v-for="(item, index) in byCategoryMovie"
       :key="index"
-      :popularFilm="item.results"
+      :titles="item.results"
       :showCarousel="true"
       :small="true"
       :title="item.title"
