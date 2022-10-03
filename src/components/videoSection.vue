@@ -31,26 +31,12 @@
 </template>
 
 <script>
-import Call from "@/call.js";
 
 export default {
   data() {
     return {
       key: "",
     };
-  },
-  props: {
-    video: Number,
-  },
-  async created() {
-    console.log(this.video);
-    let video = await new Call({ language: "it-IT" })
-      .makeCall("tv", this.video, "videos")
-      .then((res) => {
-        return res.results[0].key;
-      });
-
-    this.key = video;
   },
 };
 </script>

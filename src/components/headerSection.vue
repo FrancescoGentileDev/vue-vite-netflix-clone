@@ -7,11 +7,7 @@
 
       <div class="link">
         <ul>
-          <li><a class="active" href="#"  @click="returnHome" >Home</a></li>
-          <li><a href="#">Tv Shows</a></li>
-          <li><a href="#">Movies</a></li>
-          <li><a href="#">New & popular</a></li>
-          <li><a href="#">My List</a></li>
+          <li v-for="(tab, index) in tabs" :key="index"><a :class="{active: currentTab === tab.name}" href="#"  @click="gotoTab(tab.name)" >{{tab.text}}</a></li>
         </ul>
       </div>
     </div>
@@ -44,10 +40,19 @@ export default {
   data() {
     return {
       textInput: "",
+      currentTab: this.current.slice(0, this.current.length-3),
+      tabs: [
+        {name:"home", text: "Home"},
+        {name:"tvShow", text: "Tv shows"},
+        {name:"movie", text: "Movies"},
+        {name:"new", text: "New & popular"},
+        {name:"list", text: "My List"},
+      ]
     };
   },
   props: {
     profile: String,
+    current: String,
 
   },
 
@@ -60,6 +65,10 @@ export default {
         this.textInput = ""
         this.entered()
         }
+    },
+    gotoTab(tab) {
+      this.currentTab = tab
+      this.$emit('clickTab', tab)
     }
   },
 };

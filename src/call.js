@@ -98,7 +98,7 @@ class Call {
             runtime,
             belongs_to_collection,
           };
-        } else if (value.media_type === "tv" || this.type === "movie") {
+        } else if (value.media_type === "tv" || this.type === "tv") {
           let {
             backdrop_path,
             genres,
@@ -273,8 +273,6 @@ class Call {
     return String.fromCodePoint(...codePoints);
   }
 
-
-
   async getByCategory(genre) {
     let category = new Call({ language: "it-IT", adult: false, with_genres: genre });
 
@@ -288,9 +286,6 @@ class Call {
     }).then((value) => value);
     return res;
   }
-
-
-
 
   async getMoreInformation(id, path) {
     let type = "";
@@ -307,6 +302,24 @@ class Call {
         console.log("porco");
       });
     return response;
+  }
+
+/**
+ * 
+ * @param {string} title Title of carousel
+ * @param  {...string} path TMDB callback
+ * @returns 
+ */
+  async getArrayTitle(title,...path) {
+    return await this.makeCall(...path).then(async (res) => {
+     console.log(this.type)
+      return await this.moreInformationAllMulti(res).then(({ results }) => {
+        return { results, title: title };
+     });
+     
+   }).then((res) => {
+    return res
+    });
   }
 }
 let count = 0;

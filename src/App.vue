@@ -1,34 +1,22 @@
 <template>
   <div id="app">
-    <loader-component v-if="loading"/>
-    <pick-profile-component v-show="!loading" v-if="!pickProfile" @pickedProfile="profileSel"/>
-    <header-section  v-if="pickProfile" @text="inputText" :profile="pickedProfile"/>
-    <div class="fg-container" v-if="pickProfile && searchText === '' " v-cloak>
-
-      <video-section :video="popularTV.results[0].id"/>
-
-      <content-section
-        :popularFilm="popularTV.results"
-        :small="false"
-        :showCarousel="true"
-        :title="popularTV.title"
-      />
-      <content-section
-        :popularFilm="popularFilm.results"
-        :showCarousel="true"
-        :small="true"
-        :title="popularFilm.title"
-      />
-
-      <content-section
-        v-for="(item, index) in byCategoryMovie"
-        :key="index"
-        :popularFilm="item.results"
-        :showCarousel="true"
-        :small="true"
-        :title="item.title"
-      />
+    <!-- <div v-if="false"> -->
+      <loader-component v-if="loading" />
+      <pick-profile-component v-show="!loading" v-if="!pickProfile" @pickedProfile="profileSel" />
+    <!-- </div> -->
+    <header-section
+      v-if="pickProfile"
+      @text="inputText"
+      :profile="pickedProfile"
+      @clickTab="switchTab"
+      :current="currentTab"
+    />
+    <div class="fg-container" v-if="pickProfile  && searchText === ''" v-cloak>
+      <keep-alive>
+        <component :is="currentTab" :current="currentTab"></component>
+      </keep-alive>
     </div>
+
     <div>
       <content-section class="search" :popularFilm="search" :small="true" :showCarousel="false" />
     </div>
@@ -38,14 +26,13 @@
 <script>
 import ContentSection from "./components/contentSection.vue";
 import HeaderSection from "./components/headerSection.vue";
-import key from "./key";
 import Call from "./call";
-// eslint-disable-next-line no-unused-vars
-import axios from "axios";
-import VideoSection from './components/videoSection.vue';
-import LoaderComponent from './components/loaderComponent.vue';
-import PickProfileComponent from './components/pickProfileComponent.vue';
-
+import VideoSection from "./components/videoSection.vue";
+import LoaderComponent from "./components/loaderComponent.vue";
+import PickProfileComponent from "./components/pickProfileComponent.vue";
+import homeTab from "@/components/routes/homeTab";
+import movieTab from "@/components/routes/movieTab";
+import tvShowTab from "@/components/routes/tvShowTab";
 export default {
   name: "App",
   components: {
@@ -54,88 +41,41 @@ export default {
     VideoSection,
     LoaderComponent,
     PickProfileComponent,
+    homeTab,
+    movieTab,
+    tvShowTab,
   },
 
   data() {
-
     return {
+      currentTab: "homeTab",
+
       pickProfile: false,
       pickedProfile: "",
-      apiKey: key,
       baseUrl: "https://api.themoviedb.org/3",
       searchText: "",
       loading: true,
-
-      popularFilm: [],
-      popularTV: [],
-      byCategoryMovie: [],
-      byCategoryTV: [],
-
-      callFilm: [],
-      callTV: [],
-
-      allMovieCategory: [],
-      allTvCategory: []
     };
   },
   async mounted() {
-    let popularMovie = new Call({ language: "it-IT", adult: false });
-
-    await popularMovie.makeCall("movie", "popular").then(async (res) => {
-      await popularMovie.moreInformationAllMovie(res).then((value) => {
-        this.popularFilm = { results: value.results, title: "Popular Now" };
-        this.callFilm = popularMovie;
-      });
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.loading = false;
+      }, 2500);
     });
-
-    let popularTV = new Call({ language: "it-IT", adult: false });
-
-    await popularTV.makeCall("tv", "popular").then(async (res) => {
-      await popularTV.moreInformationAllTV(res).then((value) => {
-        this.popularTV = { results: value.results, title: "Last Release" };
-        this.callTv = popularTV;
-      });
-    });
-
-
-
-    let categoryMovie = new Call({ language: "it-IT", adult: false });
-
-    let allCategoryMovie = await categoryMovie.makeCall("genre", "movie", "list");
-
-    this.allMovieCategory = allCategoryMovie;
-
-    let randomCategoryMovie = allCategoryMovie.genres.filter(() => {
-      let rand = Math.round(Math.random());
-      return rand;
-    });
-
-    randomCategoryMovie.forEach((genre) => {
-      categoryMovie.getByCategory(genre.id).then((value) => {
-        this.byCategoryMovie.push({ results: value.results, title: genre.name });
-      });
-    });
-
-
-
-this.$nextTick(()=> {
-  setTimeout(()=>{
-     this.loading = false;
-  },2500)
-  
-})
-
-   
   },
   methods: {
     inputText(value) {
       this.searchText = value.trim().toLowerCase();
     },
     profileSel(prof) {
-      console.log(prof)
-      this.pickProfile= true;
-      this.pickedProfile=prof;
-    }
+      console.log(prof);
+      this.pickProfile = true;
+      this.pickedProfile = prof;
+    },
+    switchTab(tab) {
+      this.currentTab = tab + "Tab";
+    },
   },
 
   asyncComputed: {
@@ -182,6 +122,6 @@ body {
   padding-bottom: 15rem;
 }
 .search {
-      padding-top: 140px;
+  padding-top: 140px;
 }
 </style>
