@@ -85,8 +85,13 @@ export default {
 
     let category = new Call({ language: "it-IT", adult: false });
     category.type = "tv";
+    
     randomCategoryTV.forEach((genre) => {
+      let rand= Math.floor(Math.random()* 15 + 1)
+
+      category.data.params.page= rand
       category.getByCategory(genre.id).then((value) => {
+        console.log(value)
         this.byCategoryTV.push({ results: value.results, title: genre.name });
       });
     });

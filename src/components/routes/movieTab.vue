@@ -86,6 +86,9 @@ export default {
     let category = new Call({ language: "it-IT", adult: false });
     category.type = "movie";
     randomCategoryMovie.forEach((genre) => {
+       let rand= Math.floor(Math.random()* 15 + 1)
+
+      category.data.params.page= rand
       category.getByCategory(genre.id).then((value) => {
         this.byCategoryMovie.push({ results: value.results, title: genre.name });
       });
