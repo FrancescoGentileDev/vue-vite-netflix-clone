@@ -11,7 +11,7 @@
       @clickTab="switchTab"
       :current="currentTab"
     />
-    <div class="fg-container" v-if="pickProfile  && searchText === ''" v-cloak>
+    <div class="fg-container" v-if="!loading" v-show="pickProfile  && searchText === ''" v-cloak>
       <keep-alive>
         <component :is="currentTab" :current="currentTab"></component>
       </keep-alive>

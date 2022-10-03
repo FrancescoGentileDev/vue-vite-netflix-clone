@@ -1,17 +1,16 @@
 <template>
   <div class="background">
     <div class="video-container">
-      <video autoplay muted loop src="../assets/stream.mp4"></video>
+      <video autoplay muted loop :src="require(`../assets/${video}`)"></video>
 
       <div class="blockHover">
       </div>
         <div class="rick-container">
-          <img class="w-100" src="@/assets/Rick_and_Morty.svg" alt="" srcset="" />
+          <img class="w-100" :src="require(`../assets/${logo}`)" alt="" srcset="" />
           <div class="details">
             <div class="description">
               <div class="title-line">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Reprehenderit ducimus,
-                tempore fugit
+                {{title}}
               </div>
             </div>
             <div class="buttons">
@@ -38,6 +37,11 @@ export default {
       key: "",
     };
   },
+  props: {
+    video: String,
+    logo: String,
+    title: String
+  }
 };
 </script>
 

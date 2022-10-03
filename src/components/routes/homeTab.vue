@@ -1,6 +1,6 @@
 <template>
   <div>
-    <video-section/>
+    <video-section logo="Rick_and_Morty.svg" title="Le avventure di nonno rick e suo nipote morty attraverso universi paralleli e CETRIOLI" video="rick_and_morty.mp4"/>
 
     <content-section
       :popularFilm="popularTV.results"
@@ -67,7 +67,7 @@ export default {
     await popularMovie.getArrayTitle("Popular Now", "movie", "popular").then((res) => {
       this.popularFilm = res;
     });
-
+    
     let popularTV = new Call({ language: "it-IT", adult: false });
 
     await popularTV.getArrayTitle("Last Release", "tv", "popular").then((res) => {

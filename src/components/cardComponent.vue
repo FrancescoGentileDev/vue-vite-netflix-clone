@@ -66,12 +66,16 @@ export default {
         width: this.vote * 10 + "%",
       },
        usedImage() {
+        if(this.small) {
+          if(this.backdrop!== null) {
+            return this.backdrop
+          }
+          return this.image
+        }
+        if(this.image!== null)
+        return this.image
 
-        if (this.image!==null && this.backdrop!== null){
-        if (this.small) return this.backdrop;
-        else {
-           return this.image;
-        }}
+        return this.backdrop
       },
       seasonsOrMinutes() {
         if (this.runtime) return this.toHoursAndMinutes(this.runtime);

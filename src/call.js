@@ -18,7 +18,7 @@ class Call {
   };
 
   /**
-   * 
+   *
    * @param {Object} queries Parametri della query da aggiungere alla richiesta
    */
   constructor(queries) {
@@ -26,8 +26,8 @@ class Call {
       this.data.params[key] = queries[key];
     }
   }
-    /**
-   * 
+  /**
+   *
    * @param {Object} queries chiavi e valori da aggiungere alla query
    */
   addQuery(queries) {
@@ -36,7 +36,7 @@ class Call {
     }
   }
   /**
-   * 
+   *
    * @param {Object} queries chiavi e valori da rimuovere dalla query
    */
   removeQuery(queries) {
@@ -49,11 +49,11 @@ class Call {
     return this.data;
   }
 
-/**
- *  EFFETTUA UNA CHIAMATA AXIOS SU GLI ENDPOINT PASSATI
- * @param  {...any} path Enpoints
- * @returns {Object} dati richiesti
- */
+  /**
+   *  EFFETTUA UNA CHIAMATA AXIOS SU GLI ENDPOINT PASSATI
+   * @param  {...any} path Enpoints
+   * @returns {Object} dati richiesti
+   */
   async makeCall(...path) {
     let string = this.path;
 
@@ -75,108 +75,70 @@ class Call {
     return response;
   }
   /**
-   * 
+   *
    * @param {Object[]} tvShows Array di serie tv al quale chiedere più info
    * @returns {Object[]} Ritorna un array simile a quello in ingresso con
    * nuove proprietà contenti informazioni più dettagliate:
-   *  
+   *
    */
   async moreInformationAllMulti(moviesOrSeries) {
     const response_1 = new Promise(async (resolve) => {
-      moviesOrSeries.results = moviesOrSeries.results.filter((value, index) => {
-        if (value.media_type !== "person") return true;
-      });
-
-      moviesOrSeries.results.forEach(async (value, index) => {
-        // console.log(value)
-        let info = await this.getMoreInformation(value.id, value.media_type);
-        if (value.media_type === "movie" || this.type === "movie") {
-          let {
-            backdrop_path,
-            genres,
-            production_countries,
-            release_date,
-            runtime,
-            belongs_to_collection,
-          } = info;
-
-          if (production_countries.length === 0) production_countries.push({ iso_3166_1: "US" });
-          if (value.poster_path !== null || backdrop_path !== null) {
-            moviesOrSeries.results[index].image = this.getImage(index, 5, value.poster_path);
-            moviesOrSeries.results[index].backdrop = this.getImage(index, 5, backdrop_path);
-          } else {
-            moviesOrSeries.results[index].image =
-              "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
-            moviesOrSeries.results[index].backdrop =
-              "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+      let movies = {};
+      let tvs = {};
+      
+      if (!this.type) {
+        movies = { ...moviesOrSeries };
+        tvs = { ...moviesOrSeries };
+        movies.results = [];
+        tvs.results = [];
+        
+        moviesOrSeries.results = moviesOrSeries.results.filter((value, index) => {
+          if (value.media_type !== "person") {
+            if (value.media_type === "movie") movies.results.push(value);
+            else tvs.results.push(value);
+            return true
           }
-          moviesOrSeries.results[index].flag = this.getFlag(production_countries[0].iso_3166_1);
-          moviesOrSeries.results[index].languageCode = value.original_language;
-          moviesOrSeries.results[index].original_language = codeToLanguage[value.original_language];
-          moviesOrSeries.results[index] = {
-            ...value,
-            backdrop_path,
-            genres,
-            production_countries,
-            release_date,
-            runtime,
-            belongs_to_collection,
-          };
-        } else if (value.media_type === "tv" || this.type === "tv") {
-          let {
-            backdrop_path,
-            genres,
-            origin_country,
-            first_air_date,
-            seasons,
-            belongs_to_collection,
-          } = info;
-
-          if (value.poster_path !== null || backdrop_path !== null) {
-            moviesOrSeries.results[index].image = this.getImage(index, 5, value.poster_path);
-            moviesOrSeries.results[index].backdrop = this.getImage(index, 5, backdrop_path);
-          } else {
-            moviesOrSeries.results[index].image =
-              "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
-            moviesOrSeries.results[index].backdrop =
-              "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
-          }
-
-          moviesOrSeries.results[index].flag = this.getFlag(origin_country[0]);
-          moviesOrSeries.results[index].languageCode = value.original_language;
-          moviesOrSeries.results[index].original_language = codeToLanguage[value.original_language];
-          seasons = seasons.length;
-
-          moviesOrSeries.results[index] = {
-            title: value.name,
-            release_date: first_air_date,
-            backdrop_path,
-            genres,
-            origin_country,
-            first_air_date,
-            seasons,
-            belongs_to_collection,
-            ...value,
-          };
+        });
+      } else {
+        if (this.type === "movie") movies = { ...moviesOrSeries };
+        else tvs = { ...moviesOrSeries };
+      }
+      moviesOrSeries.results = []
+      if (movies.results !== undefined) {
+        let mov = {}
+        mov = await this.moreInformationAllMovie(movies)
+        moviesOrSeries.results = mov.results
+        
+        console.log("dentro",mov)
+      }
+      if(tvs.results !== undefined){
+        tvs = await this.moreInformationAllTV(tvs)
+        if (movies.results !==undefined)
+        {
+          moviesOrSeries.results.concat(tvs.results)
         }
-      });
-      // console.log("api", response)
-      this.results = moviesOrSeries;
+        else
+        moviesOrSeries.results = tvs.results
+      }
+
+      this.results = moviesOrSeries
+      
       resolve(moviesOrSeries);
     });
+    console.log("response",response_1.results)
     return response_1;
   }
   /**
-   * 
+   *
    * @param {Object[]} tvShows Array di Film al quale chiedere più info
    * @returns {Object[]} Ritorna un array simile a quello in ingresso con
    * nuove proprietà contenti informazioni più dettagliate:
-   *  
+   *
    */
   async moreInformationAllMovie(movies) {
     const response_1 = new Promise(async (resolve) => {
       movies.results.forEach(async (value, index) => {
-        let info = await this.getMoreInformation(value.id);
+        let info = await this.getMoreInformation(value.id,"movie");
 
         let {
           backdrop_path,
@@ -211,22 +173,24 @@ class Call {
         };
       });
       this.results = movies;
+
       resolve(movies);
     });
+
     return response_1;
   }
 
   /**
-   * 
+   *
    * @param {Object[]} tvShows Array di serie tv al quale chiedere più info
    * @returns {Object[]} Ritorna un array simile a quello in ingresso con
    * nuove proprietà contenti informazioni più dettagliate:
-   *  
+   *
    */
   async moreInformationAllTV(tvShows) {
     const response_1 = new Promise(async (resolve) => {
       tvShows.results.forEach(async (value, index) => {
-        let info = await this.getMoreInformation(value.id);
+        let info = await this.getMoreInformation(value.id,"tv");
         let {
           backdrop_path,
           genres,
@@ -268,6 +232,8 @@ class Call {
     });
     return response_1;
   }
+
+
   /**
    *
    * @returns la pagina successiva
@@ -312,9 +278,10 @@ class Call {
    */
   getImage(index = 0, numberSize = 4, poster_path) {
     let path;
-    if (poster_path) path = poster_path;
+    if (poster_path !== "") path = poster_path;
     else path = this.results.results[index].poster_path;
-
+    if (poster_path === null)
+      return null
     let sizes = ["w92", "w154", "w185", "w342", "w500", "w780", "original"];
     let result = "https://image.tmdb.org/t/p/" + sizes[numberSize] + path;
 
@@ -368,13 +335,29 @@ class Call {
         return data;
       })
       .catch((err) => {
+        console.log(`${type}`);
+      });
+    return response;
+  }
+  async getCredits(id, path) {
+    let type = "";
+    if (path) type = path;
+    else type = this.type;
+
+    // console.log(path, type)
+    let response = await axios
+      .get(`${this.baseURL}/${type}/${id}/credits`, this.Params)
+      .then(({ data }) => {
+        data = data.cast.slice(0, 4).map((actor) => actor.name);
+        return data;
+      })
+      .catch((err) => {
         console.log("porco");
       });
     return response;
   }
-
   /**
-   * dato un titolo e la path ritorna un array di oggetti contenenti i risultati con il more information aggiunto
+   * dato un titolo e la path, ritorna un array di oggetti contenenti i risultati con il more information aggiunto
    * @param {string} title Title of carousel
    * @param  {...string} path TMDB callback
    * @returns {Object {
@@ -384,7 +367,7 @@ class Call {
   async getArrayTitle(title, ...path) {
     return await this.makeCall(...path)
       .then(async (res) => {
-        console.log(this.type);
+
         return await this.moreInformationAllMulti(res).then(({ results }) => {
           return { results, title };
         });
