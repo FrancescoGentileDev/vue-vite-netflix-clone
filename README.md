@@ -1,6 +1,6 @@
 # NETFLIX CLONE
 # In this project I continued to explore the world of vue.js. I recreated netflix showcase, the database made by TMDB was essential in this project THANKS.
-#### LIVE PREVIEW => https://francescogentiledev.github.io/vue-boolflix
+#### LIVE PREVIEW => https://francescogentiledev.github.io/vue-vite-netflix-clone/
 
 https://user-images.githubusercontent.com/45791472/193652464-02162706-e025-4ba4-9f3b-6c47bb064c57.mp4
 
