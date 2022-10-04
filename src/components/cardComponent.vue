@@ -201,6 +201,7 @@ div {
           position: relative;
           background-color: $brand-color-dark;
           background-clip: text;
+          -webkit-background-clip: text;
           z-index: 3;
           color: transparent;
           .bars {
@@ -211,6 +212,7 @@ div {
             height: 100%;
             background: yellow;
             background-clip: text;
+            -webkit-background-clip: text;
             top: 0;
           }
         }

@@ -1,12 +1,17 @@
 {
-  "name": "app",
-  "version": "0.1.0",
-  "private": true,
+  "name": "vite-js",
+  "version": "0.0.0",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "deploy": "node scripts/gh-pages-deploy.js"
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "sass": "^1.32.7",
+    "sass-loader": "^12.0.0",
+    "vite": "^3.0.9",
+    "vite-plugin-vue2": "^2.0.2",
+    "vue-template-compiler": "^2.7.10"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
@@ -15,28 +20,14 @@
     "@fortawesome/vue-fontawesome": "^2.0.8",
     "axios": "^0.27.2",
     "bootstrap": "^5.2.1",
-    "core-js": "^3.8.3",
+    "browserify": "^17.0.0",
     "country-flag-emoji-polyfill": "^0.1.4",
     "country-flag-icons": "^1.5.5",
     "dotenv": "^16.0.2",
     "lottie-web-vue": "^1.2.1",
-    "querystring-es3": "^0.2.1",
-    "video-url-link": "^0.1.5",
-    "vue": "^2.6.14",
+    "uniq": "^1.0.1",
+    "vue": "^2.7.10",
     "vue-async-computed": "^3.9.0",
     "vue-lazyload": "^1.3.4"
-  },
-  "devDependencies": {
-    "execa": "latest",
-    "@babel/core": "^7.12.16",
-    "@babel/eslint-parser": "^7.12.16",
-    "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-plugin-eslint": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3",
-    "sass": "^1.32.7",
-    "sass-loader": "^12.0.0",
-    "vue-template-compiler": "^2.6.14"
   }
 }

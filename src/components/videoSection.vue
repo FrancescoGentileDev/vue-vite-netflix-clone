@@ -1,12 +1,12 @@
 <template>
   <div class="background">
     <div class="video-container">
-      <video autoplay muted loop :src="require(`../assets/${video}`)"></video>
+      <video autoplay muted loop :src="jumbo"></video>
 
       <div class="blockHover">
       </div>
         <div class="rick-container">
-          <img class="w-100" :src="require(`../assets/${logo}`)" alt="" srcset="" />
+          <img class="w-100" :src="logos" alt="" srcset="" />
           <div class="details">
             <div class="description">
               <div class="title-line">
@@ -30,10 +30,11 @@
 </template>
 
 <script>
-
 export default {
   data() {
     return {
+      jumbo:  new URL(`../assets/${this.video}`, import.meta.url).href,
+      logos: new URL(`../assets/${this.logo}`, import.meta.url).href,
       key: "",
     };
   },

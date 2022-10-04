@@ -1,21 +1,21 @@
 /* eslint-disable no-async-promise-executor */
 /* eslint-disable no-unused-vars */
-import key from "./key";
-import axios from "axios";
+import key from './key'
+import axios from 'axios'
 
-import { codeToLanguage, languageToCountry } from "./country";
+import { codeToLanguage, languageToCountry } from './country'
 class Call {
-  pages = 1;
-  path = "";
-  type = "";
-  baseURL = "https://api.themoviedb.org/3";
-  results = [];
+  pages = 1
+  path = ''
+  type = ''
+  baseURL = 'https://api.themoviedb.org/3'
+  results = []
   data = {
     params: {
       api_key: key,
       page: this.pages,
     },
-  };
+  }
 
   /**
    *
@@ -23,7 +23,7 @@ class Call {
    */
   constructor(queries) {
     for (let key in queries) {
-      this.data.params[key] = queries[key];
+      this.data.params[key] = queries[key]
     }
   }
   /**
@@ -32,7 +32,7 @@ class Call {
    */
   addQuery(queries) {
     for (let key in queries) {
-      this.data.params[key] = queries[key];
+      this.data.params[key] = queries[key]
     }
   }
   /**
@@ -41,12 +41,12 @@ class Call {
    */
   removeQuery(queries) {
     for (let key in queries) {
-      delete this.data.params[key];
+      delete this.data.params[key]
     }
   }
 
   get Params() {
-    return this.data;
+    return this.data
   }
 
   /**
@@ -55,24 +55,22 @@ class Call {
    * @returns {Object} dati richiesti
    */
   async makeCall(...path) {
-    let string = this.path;
+    let string = this.path
 
-    if (string === "") {
+    if (string === '') {
       for (let ele of path) {
-        if (ele === "movie") this.type = "movie";
-        else if (ele === "tv") this.type = "tv";
+        if (ele === 'movie') this.type = 'movie'
+        else if (ele === 'tv') this.type = 'tv'
 
-        string += "/" + ele;
+        string += '/' + ele
       }
     }
 
-    this.path = string;
+    this.path = string
 
-    let response = await axios.get(this.baseURL + string, this.data).then(({ data }) => {
-      return data;
-    });
+    let {data} = await axios.get(this.baseURL + string, this.data)
 
-    return response;
+    return data
   }
   /**
    *
@@ -82,51 +80,44 @@ class Call {
    *
    */
   async moreInformationAllMulti(moviesOrSeries) {
-    const response_1 = new Promise(async (resolve) => {
-      let movies = {};
-      let tvs = {};
-      
+      let movies = {}
+      let tvs = {}
+
       if (!this.type) {
-        movies = { ...moviesOrSeries };
-        tvs = { ...moviesOrSeries };
-        movies.results = [];
-        tvs.results = [];
-        
+        movies = { ...moviesOrSeries }
+        tvs = { ...moviesOrSeries }
+        movies.results = []
+        tvs.results = []
+
         moviesOrSeries.results = moviesOrSeries.results.filter((value, index) => {
-          if (value.media_type !== "person") {
-            if (value.media_type === "movie") movies.results.push(value);
-            else tvs.results.push(value);
+          if (value.media_type !== 'person') {
+            if (value.media_type === 'movie') movies.results.push(value)
+            else tvs.results.push(value)
             return true
           }
-        });
+        })
       } else {
-        if (this.type === "movie") movies = { ...moviesOrSeries };
-        else tvs = { ...moviesOrSeries };
+        if (this.type === 'movie') movies = { ...moviesOrSeries }
+        else tvs = { ...moviesOrSeries }
       }
       moviesOrSeries.results = []
       if (movies.results !== undefined) {
         let mov = {}
         mov = await this.moreInformationAllMovie(movies)
         moviesOrSeries.results = mov.results
-        
-
       }
-      if(tvs.results !== undefined){
+      if (tvs.results !== undefined) {
         tvs = await this.moreInformationAllTV(tvs)
-        if (movies.results !==undefined)
-        {
+        if (movies.results !== undefined) {
           moviesOrSeries.results.concat(tvs.results)
-        }
-        else
-        moviesOrSeries.results = tvs.results
+        } else moviesOrSeries.results = tvs.results
       }
 
       this.results = moviesOrSeries
-      
-      resolve(moviesOrSeries);
-    });
 
-    return response_1;
+
+
+    return moviesOrSeries
   }
   /**
    *
@@ -136,32 +127,23 @@ class Call {
    *
    */
   async moreInformationAllMovie(movies) {
-    const response_1 = new Promise(async (resolve) => {
-      movies.results.forEach(async (value, index) => {
-        let info = await this.getMoreInformation(value.id,"movie");
 
-        let {
-          backdrop_path,
-          genres,
-          production_countries,
-          release_date,
-          runtime,
-          belongs_to_collection,
-        } = info;
+    await movies.results.forEach(async (value, index) => {
+        let info = await this.getMoreInformation(value.id, 'movie')
 
-        if (production_countries.length === 0) production_countries.push({ iso_3166_1: "US" });
+        let { backdrop_path, genres, production_countries, release_date, runtime, belongs_to_collection } = info
+
+        if (production_countries.length === 0) production_countries.push({ iso_3166_1: 'US' })
         if (value.poster_path !== null || backdrop_path !== null) {
-          movies.results[index].image = this.getImage(index, 5, value.poster_path);
-          movies.results[index].backdrop = this.getImage(index, 5, backdrop_path);
+          movies.results[index].image = this.getImage(index, 5, value.poster_path)
+          movies.results[index].backdrop = this.getImage(index, 5, backdrop_path)
         } else {
-          movies.results[index].image =
-            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
-          movies.results[index].backdrop =
-            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+          movies.results[index].image = 'https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg'
+          movies.results[index].backdrop = 'https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg'
         }
-        movies.results[index].flag = this.getFlag(production_countries[0].iso_3166_1);
-        movies.results[index].languageCode = value.original_language;
-        movies.results[index].original_language = codeToLanguage[value.original_language];
+        movies.results[index].flag = this.getFlag(production_countries[0].iso_3166_1)
+        movies.results[index].languageCode = value.original_language
+        movies.results[index].original_language = codeToLanguage[value.original_language]
         movies.results[index] = {
           ...value,
           backdrop_path,
@@ -170,14 +152,11 @@ class Call {
           release_date,
           runtime,
           belongs_to_collection,
-        };
-      });
-      this.results = movies;
-
-      resolve(movies);
-    });
-
-    return response_1;
+        }
+      })
+    this.results = movies
+    
+    return movies
   }
 
   /**
@@ -188,32 +167,22 @@ class Call {
    *
    */
   async moreInformationAllTV(tvShows) {
-    const response_1 = new Promise(async (resolve) => {
-      tvShows.results.forEach(async (value, index) => {
-        let info = await this.getMoreInformation(value.id,"tv");
-        let {
-          backdrop_path,
-          genres,
-          origin_country,
-          first_air_date,
-          seasons,
-          belongs_to_collection,
-        } = info;
+      await tvShows.results.forEach(async (value, index) => {
+        let info = await this.getMoreInformation(value.id, 'tv')
+        let { backdrop_path, genres, origin_country, first_air_date, seasons, belongs_to_collection } = info
 
         if (value.poster_path !== null || backdrop_path !== null) {
-          tvShows.results[index].image = this.getImage(index, 5, value.poster_path);
-          tvShows.results[index].backdrop = this.getImage(index, 5, backdrop_path);
+          tvShows.results[index].image = this.getImage(index, 5, value.poster_path)
+          tvShows.results[index].backdrop = this.getImage(index, 5, backdrop_path)
         } else {
-          tvShows.results[index].image =
-            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
-          tvShows.results[index].backdrop =
-            "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+          tvShows.results[index].image = 'https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg'
+          tvShows.results[index].backdrop = 'https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg'
         }
 
-        tvShows.results[index].flag = this.getFlag(origin_country[0]);
-        tvShows.results[index].languageCode = value.original_language;
-        tvShows.results[index].original_language = codeToLanguage[value.original_language];
-        seasons = seasons.length;
+        tvShows.results[index].flag = this.getFlag(origin_country[0])
+        tvShows.results[index].languageCode = value.original_language
+        tvShows.results[index].original_language = codeToLanguage[value.original_language]
+        seasons = seasons.length
 
         tvShows.results[index] = {
           title: value.name,
@@ -225,24 +194,22 @@ class Call {
           seasons,
           belongs_to_collection,
           ...value,
-        };
-      });
-      this.results = tvShows;
-      resolve(tvShows);
-    });
-    return response_1;
-  }
+        }
+      })
+      this.results = tvShows
 
+    return tvShows
+  }
 
   /**
    *
    * @returns la pagina successiva
    */
   async nextPage() {
-    if (this.path !== "") {
-      this.pages++;
-      this.data.params.page++;
-      return await this.makeCall(this.path);
+    if (this.path !== '') {
+      this.pages++
+      this.data.params.page++
+      return await this.makeCall(this.path)
     }
   }
   /**
@@ -250,10 +217,10 @@ class Call {
    * @returns la pagina precedente
    */
   async prevPage() {
-    if (this.path !== "") {
-      this.pages--;
-      this.data.params.page--;
-      return await this.makeCall(this.path);
+    if (this.path !== '') {
+      this.pages--
+      this.data.params.page--
+      return await this.makeCall(this.path)
     }
   }
   /**
@@ -262,10 +229,10 @@ class Call {
    * @returns
    */
   async toPage(number) {
-    if (this.path !== "") {
-      this.pages = number;
-      this.data.params.page = number;
-      return await this.makeCall(this.path);
+    if (this.path !== '') {
+      this.pages = number
+      this.data.params.page = number
+      return await this.makeCall(this.path)
     }
   }
 
@@ -277,15 +244,14 @@ class Call {
    * @returns {String} Link completo all'immagine
    */
   getImage(index = 0, numberSize = 4, poster_path) {
-    let path;
-    if (poster_path !== "") path = poster_path;
-    else path = this.results.results[index].poster_path;
-    if (poster_path === null)
-      return null
-    let sizes = ["w92", "w154", "w185", "w342", "w500", "w780", "original"];
-    let result = "https://image.tmdb.org/t/p/" + sizes[numberSize] + path;
+    let path
+    if (poster_path !== '') path = poster_path
+    else path = this.results.results[index].poster_path
+    if (poster_path === null) return null
+    let sizes = ['w92', 'w154', 'w185', 'w342', 'w500', 'w780', 'original']
+    let result = 'https://image.tmdb.org/t/p/' + sizes[numberSize] + path
 
-    return result;
+    return result
   }
   /**
    * DATA LA SIGLA DELLA NAZIONE TORNA LA SUA BANDIERA IN EMOJI UNICODE
@@ -294,11 +260,11 @@ class Call {
    */
   getFlag(country) {
     if (!country) {
-      country = "US";
+      country = 'US'
     }
-    const codePoints = country.split("").map((char) => 127397 + char.charCodeAt());
+    const codePoints = country.split('').map((char) => 127397 + char.charCodeAt())
     // console.log(codePoints)
-    return String.fromCodePoint(...codePoints);
+    return String.fromCodePoint(...codePoints)
   }
   /**
    *
@@ -306,16 +272,10 @@ class Call {
    * @returns {{ results: Object [], title: genre.name }} Ritorna ogetto con i titoli del genere selezionato
    */
   async getByCategory(genre) {
-    this.addQuery({ with_genres: genre });
-    let res = await new Promise((resolve) => {
-      this.makeCall("discover", this.type).then(async (res) => {
-        this.moreInformationAllMulti(res).then((value) => {
-          resolve(value);
-          // this.category.push({ results: value.results, title: "Last Release" });
-        });
-      });
-    }).then((value) => value);
-    return res;
+    this.addQuery({ with_genres: genre })
+    let call = await this.makeCall('discover', this.type)
+    let info = await this.moreInformationAllMulti(call)
+    return info
   }
   /**
    *
@@ -324,37 +284,31 @@ class Call {
    * @returns {Object[]} Ritorna l'id con più informazioni
    */
   async getMoreInformation(id, path) {
-    let type = "";
-    if (path) type = path;
-    else type = this.type;
+    let type = ''
+    if (path) type = path
+    else type = this.type
 
     // console.log(path, type)
-    let response = await axios
-      .get(`${this.baseURL}/${type}/${id}`, this.Params)
-      .then(({ data }) => {
-        return data;
-      })
-      .catch((err) => {
-        console.log(`${type}`);
-      });
-    return response;
+    let { data } = await axios.get(`${this.baseURL}/${type}/${id}`, this.Params)
+    return data
   }
+
   async getCredits(id, path) {
-    let type = "";
-    if (path) type = path;
-    else type = this.type;
+    let type = ''
+    if (path) type = path
+    else type = this.type
 
     // console.log(path, type)
     let response = await axios
       .get(`${this.baseURL}/${type}/${id}/credits`, this.Params)
       .then(({ data }) => {
-        data = data.cast.slice(0, 4).map((actor) => actor.name);
-        return data;
+        data = data.cast.slice(0, 4).map((actor) => actor.name)
+        return data
       })
       .catch((err) => {
-        console.log("porco");
-      });
-    return response;
+        console.log('porco')
+      })
+    return response
   }
   /**
    * dato un titolo e la path, ritorna un array di oggetti contenenti i risultati con il more information aggiunto
@@ -365,17 +319,10 @@ class Call {
    * results: Array}}
    */
   async getArrayTitle(title, ...path) {
-    return await this.makeCall(...path)
-      .then(async (res) => {
-
-        return await this.moreInformationAllMulti(res).then(({ results }) => {
-          return { results, title };
-        });
-      })
-      .then((res) => {
-        return res;
-      });
+    let call = await this.makeCall(...path)
+    let { results } = await this.moreInformationAllMulti(call)
+    return { results, title }
   }
 }
-let count = 0;
-export default Call;
+let count = 0
+export default Call
