@@ -69,7 +69,7 @@ export default {
   methods: {
     scroll(direction) {
       let carousel = this.$refs.carousel;
-      console.log(this.$refs.carousel, carousel.scrollWidth);
+
       let number = 4;
 
       if (direction == "right") {
@@ -84,7 +84,7 @@ export default {
       if (this.scrolledCarousel < -4400) {
         carousel.style.left = `${-4370}px`;
       }
-      console.log(carousel.scrollWidth, this.scrolledCarousel, this.scrollLimit);
+
     },
   },
 };

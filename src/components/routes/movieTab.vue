@@ -70,7 +70,6 @@ export default {
     await trendingFilm.getArrayTitle("Trending Now", "trending", "movie", "week").then((res) => {
       this.trendingFilm = res;
     });
-    console.log("trend", this.trendingFilm)
 
     let categoryMovie = new Call({ language: "it-IT", adult: false });
 

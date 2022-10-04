@@ -11,7 +11,7 @@
       <div class="link">
         <ul>
           <li v-for="(tab, index) in tabs" :key="index">
-            <a :class="{ active: currentTab === tab.name }" href="#" @click="gotoTab(tab.name)">{{
+            <a :class="{ active: currentTab == tab.name }" href="#" @click="gotoTab(tab.name)">{{
               tab.text
             }}</a>
           </li>
@@ -19,6 +19,24 @@
       </div>
     </div>
     <div class="d-flex align-items-center rightHead me-4">
+      <select
+        v-if="showSelect"
+        class="form-select form-select"
+        name=""
+        id=""
+        @change="selectCategory"
+      >
+        <option :value="-1">Category</option>
+        <option
+          v-for="genre in genres"
+          :selected="genre.id == sel"
+          :value="genre.id"
+          :key="genre.id"
+        >
+          {{ genre.name }}
+        </option>
+      </select>
+
       <input
         type="text"
         class="form-control my-4"
@@ -47,11 +65,17 @@
 </template>
 
 <script>
+import Call from "@/call";
 export default {
   data() {
     return {
       textInput: "",
       colorBackground: true,
+      allMovieCategory: [],
+      showSelect: false,
+      allTVCategory: [],
+      genres: [],
+      sel: "",
       currentTab: this.current.slice(0, this.current.length - 3),
       tabs: [
         { name: "home", text: "Home" },
@@ -66,14 +90,28 @@ export default {
     profile: String,
     current: String,
   },
-  mounted() {
+  async created() {
     window.addEventListener("scroll", () => {
       let scroll = window.scrollY;
       this.colorBackground = scroll > 0 ? false : true;
     });
+
+    let categoryMovie = new Call({ language: "it-IT", adult: false });
+
+    let allCategoryMovie = await categoryMovie.makeCall("genre", "movie", "list");
+
+    this.allMovieCategory = allCategoryMovie;
+
+    let categoryTV = new Call({ language: "it-IT", adult: false });
+
+    let allCategoryTV = await categoryTV.makeCall("genre", "tv", "list");
+
+    this.allTVCategory = allCategoryTV;
   },
   methods: {
     entered() {
+      this.sel = -1;
+      this.$emit("selectCategory", "-1");
       this.$emit("text", this.textInput);
     },
     returnHome() {
@@ -83,8 +121,30 @@ export default {
       }
     },
     gotoTab(tab) {
+      this.sel = -1
       this.currentTab = tab;
+      this.textInput = ""
+      this.$emit("text", "");
+      this.$emit("selectCategory", "-1");
+
+      if (tab == "tvShow") {
+        this.genres = this.allTVCategory.genres;
+        this.showSelect = true;
+      } else if (tab === "movie") {
+        this.genres = this.allMovieCategory.genres;
+        this.showSelect = true;
+      } else this.showSelect = false;
+
       this.$emit("clickTab", tab);
+    },
+    selectCategory(event) {
+      this.textInput = ""
+      this.$emit("text", "");
+
+      if (event.target.value !== -1) {
+        this.$emit("selectCategory", event.target.value);
+        this.sel = event.target.value;
+      }
     },
   },
 };
@@ -128,7 +188,8 @@ export default {
   }
   .rightHead {
     gap: 2rem;
-    input {
+    input,
+    select {
       background-color: $backround-primary;
       color: white;
     }

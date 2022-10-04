@@ -70,7 +70,7 @@ export default {
     await trendingTV.getArrayTitle("Trending Now", "trending", "tv", "week").then((res) => {
       this.trendingTV = res;
     });
-    console.log("trend", this.trendingTV)
+
 
     let categoryTV = new Call({ language: "it-IT", adult: false });
 
@@ -91,7 +91,7 @@ export default {
 
       category.data.params.page= rand
       category.getByCategory(genre.id).then((value) => {
-        console.log(value)
+
         this.byCategoryTV.push({ results: value.results, title: genre.name });
       });
     });

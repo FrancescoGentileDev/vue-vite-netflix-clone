@@ -1,24 +1,43 @@
 <template>
   <div id="app">
     <!-- <div v-if="false"> -->
-      <loader-component v-if="loading" />
-      <pick-profile-component v-show="!loading" v-if="!pickProfile" @pickedProfile="profileSel" />
+    <loader-component v-if="loading" />
+    <pick-profile-component v-show="!loading" v-if="!pickProfile" @pickedProfile="profileSel" />
     <!-- </div> -->
     <header-section
       v-if="pickProfile"
       @text="inputText"
       :profile="pickedProfile"
       @clickTab="switchTab"
+      @selectCategory="selectCategory"
       :current="currentTab"
     />
-    <div class="fg-container" v-if="!loading" v-show="pickProfile  && searchText === ''" v-cloak>
+    <div
+      class="fg-container"
+      v-if="!loading"
+      v-show="pickProfile && searchText === '' && category === '-1'"
+      v-cloak
+    >
       <keep-alive>
         <component :is="currentTab" :current="currentTab"></component>
       </keep-alive>
     </div>
 
     <div>
-      <content-section class="search" :titles="search" :small="true" :showCarousel="false" />
+      <content-section
+        v-if="searchText !== '' && category === '-1'"
+        class="search"
+        :titles="search"
+        :small="true"
+        :showCarousel="false"
+      />
+      <content-section
+        v-if="category !== '-1' && searchText === ''"
+        class="category"
+        :titles="getCategory"
+        :small="true"
+        :showCarousel="false"
+      />
     </div>
   </div>
 </template>
@@ -49,7 +68,7 @@ export default {
   data() {
     return {
       currentTab: "homeTab",
-
+      category: "-1",
       pickProfile: false,
       pickedProfile: "",
       baseUrl: "https://api.themoviedb.org/3",
@@ -69,12 +88,15 @@ export default {
       this.searchText = value.trim().toLowerCase();
     },
     profileSel(prof) {
-      console.log(prof);
+     
       this.pickProfile = true;
       this.pickedProfile = prof;
     },
     switchTab(tab) {
       this.currentTab = tab + "Tab";
+    },
+    selectCategory(event) {
+      this.category = event;
     },
   },
 
@@ -94,10 +116,31 @@ export default {
             arr = value.results;
           });
         });
-        console.log("arr", arr);
+
         return arr;
       }
       return arr;
+    },
+    async getCategory() {
+      let arr = [];
+      if (this.category !== "-1") {
+        let category = new Call({ language: "it-IT", adult: false });
+        if (this.currentTab === "tvShowTab") category.type = "tv";
+        else if (this.currentTab === "movieTab") category.type = "movie";
+
+        for (let i = 0; i < 4; i++) {
+          let rand = Math.floor(Math.random() * 15 + 1);
+          category.data.params.page = rand;
+          await category.getByCategory(this.category).then((value) => {
+            value.results.forEach((rec) =>{
+              arr.push(rec)
+            })
+            
+          });
+        }
+
+        return arr;
+      } else return arr;
     },
   },
 };
@@ -121,7 +164,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   padding-bottom: 15rem;
 }
-.search {
+.search, .category {
   padding-top: 140px;
 }
 </style>

@@ -86,7 +86,7 @@ video {
   margin-left: 7rem;
   max-width: 800px;
   img {
-    max-width: 700px;
+    max-width: 70%;
   }
   .details {
     margin-left: 2rem;
